@@ -116,31 +116,22 @@
 
 <p>Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Получить текущее активное окно, его pid, имя процесса</span>
-</span><span class='line'><span class="nv">current_pid</span><span class="o">=</span><span class="k">$(</span>xdotool getwindowpid <span class="k">$(</span>xdotool getactivewindow<span class="k">))</span>
-</span><span class='line'><span class="nv">current_name</span><span class="o">=</span><span class="k">$(</span>ps -p <span class="nv">$current_pid</span> -o <span class="nv">comm</span><span class="o">=</span><span class="k">)</span>
-</span><span class='line'><span class="nv">clean_name</span><span class="o">=</span><span class="k">${</span><span class="nv">current_name</span><span class="p">%-</span><span class="k">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">name</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="k">:-</span><span class="nv">$clean_name</span><span class="k">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># найти окна процесса (только видимые), активировать каждое из них</span>
-</span><span class='line'>xdotool search --onlyvisible --class <span class="s2">&quot;$name&quot;</span> <span class="se">\</span>
-</span><span class='line'>  <span class="p">|</span> xargs -L1 --no-run-if-empty xdotool windowactivate
-</span></code></pre></td></tr></table></div></figure>
+<div><script src='https://gist.github.com/9e1641e39abbda6392f1.js'></script>
+<noscript><pre><code>#!/bin/bash
+# 
+# Activate all windows with process name of currently active window
+
+# Получить текущее активное окно, его pid, имя процесса
+current_pid=$(xdotool getwindowpid $(xdotool getactivewindow))
+current_name=$(ps -p $current_pid -o comm=)
+clean_name=${current_name%-}
+
+name=${1:-$clean_name}
+
+# найти окна процесса (только видимые), активировать каждое из них
+xdotool search --onlyvisible --class &quot;$name&quot; \
+  | xargs -L1 --no-run-if-empty xdotool windowactivate
+</code></pre></noscript></div>
 
 
 <h3>Какие были проблемы:</h3>
