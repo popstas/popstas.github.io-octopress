@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Показать все окна Gnome Terminal в Ubuntu - Записки о Linux</title>
+  <meta name="author" content="Stanislav Popov">
+
+  
+  <meta name="description" content="При работе за компом имею привычку открывать много терминалов,
+не группируя их по вкладкам, рабочим столам или менеджером терминалов типа tmux.
+При &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Записки о Linux" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Записки о Linux</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="popstas.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Показать все окна Gnome Terminal в Ubuntu</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-16T23:55:17+05:00'><span class='date'>16.11.15</span> <span class='time'>11:55 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>При работе за компом имею привычку открывать много терминалов,
+не группируя их по вкладкам, рабочим столам или менеджером терминалов типа tmux.
+При этом терминалы расположены по всему рабочему экрану.</p>
+
+<p>Из-за этого была такая проблема: при переключении на браузер или редактор,
+которые обычно занимают по полэкрана, все терминалы оказывались под большими окнами.</p>
+
+<p>Придумал решение: нужно, чтобы можно было выбрать один терминал (который обычно доступен по Alt-Tab),
+нажать хоткей и достать все окна этой же программы наверх.</p>
+
+<!-- more -->
+
+
+<h4>Для этого нужно:</h4>
+
+<ul>
+<li>определить текущее окно</li>
+<li>определить его класс</li>
+<li>найти все окна с тем же классом</li>
+<li>активировать каждое из окон</li>
+</ul>
+
+
+<p>Для манипуляции с окнами из консоли использовал <code>xdotool</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo aptitude install xdotool
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Получить текущее активное окно, его pid, имя процесса</span>
+</span><span class='line'><span class="nv">current_pid</span><span class="o">=</span><span class="k">$(</span>xdotool getwindowpid <span class="k">$(</span>xdotool getactivewindow<span class="k">))</span>
+</span><span class='line'><span class="nv">current_name</span><span class="o">=</span><span class="k">$(</span>ps -p <span class="nv">$current_pid</span> -o <span class="nv">comm</span><span class="o">=</span><span class="k">)</span>
+</span><span class='line'><span class="nv">clean_name</span><span class="o">=</span><span class="k">${</span><span class="nv">current_name</span><span class="p">%-</span><span class="k">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">name</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="k">:-</span><span class="nv">$clean_name</span><span class="k">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># найти окна процесса (только видимые), активировать каждое из них</span>
+</span><span class='line'>xdotool search --onlyvisible --class <span class="s2">&quot;$name&quot;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="p">|</span> xargs -L1 --no-run-if-empty xdotool windowactivate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Какие были проблемы:</h3>
+
+<ul>
+<li>У каждого процесса оказалось штук по 5 &ldquo;окон&rdquo;, которые на самом деле не видны</li>
+<li>Текущий процесс <code>gnome-terminal</code> виден в процессах как <code>gnome-terminal-server</code>,
+в процессах имя не входит и отображается как <code>gnome-terminal-</code>,
+в этом месте был вбит костыль, добавлена обрезка дефиса в конце.</li>
+</ul>
+
+
+<p>Скрипт был сохранен в /usr/local/bin/window-activate и через <code>ccsm</code> (Compiz config settings manager) повешен на хоткей.</p>
+
+<p>Скрипт можно вызывать, передав параметром имя процесса, иначе возьмет его из текущего окна.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Stanislav Popov</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-16T23:55:17+05:00'><span class='date'>16.11.15</span> <span class='time'>11:55 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bash/'>bash</a>, <a class='category' href='/blog/categories/ubuntu/'>ubuntu</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/" data-via="" data-counturl="http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/">Показать все окна Gnome Terminal в Ubuntu</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/popstas">@popstas</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'popstas',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Stanislav Popov -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
