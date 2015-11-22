@@ -2,10 +2,11 @@
 layout: post
 title: "Показать все окна gnome terminal в Ubuntu"
 date: 2015-11-16 23:55:17 +0500
-comments: false
+comments: true
 categories: 
 - Ubuntu
 - bash
+
 ---
 
 При работе за компом имею привычку открывать много терминалов, 
@@ -27,14 +28,16 @@ categories:
 - активировать каждое из окон
 
 Для манипуляции с окнами из консоли использовал `xdotool`:
-```bash
+``` bash
 sudo aptitude install xdotool
 ```
 
 Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:
 
-```
+``` bash windows-activate https://gist.github.com/popstas/9e1641e39abbda6392f1
 #!/bin/bash
+# 
+# Activate all windows with process name of currently active window
 
 # Получить текущее активное окно, его pid, имя процесса
 current_pid=$(xdotool getwindowpid $(xdotool getactivewindow))
