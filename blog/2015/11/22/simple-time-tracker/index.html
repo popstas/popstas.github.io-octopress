@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Простой тайм-трекер для отслеживания потраченного времени - Записки о Linux</title>
+  <meta name="author" content="Stanislav Popov">
+
+  
+  <meta name="description" content="На работе у меня часто бывает такое, что не понятно, куда ушло время.
+Поэтому написал для себя небольшое приложение, тайм-трекер - http://popstas. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://popstas.github.io/blog/2015/11/22/simple-time-tracker/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Записки о Linux" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-70438594-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Записки о Linux</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="popstas.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Простой тайм-трекер для отслеживания потраченного времени</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-22T09:40:45+05:00'><span class='date'>22.11.15</span> <span class='time'>9:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>На работе у меня часто бывает такое, что не понятно, куда ушло время.
+Поэтому написал для себя небольшое приложение, тайм-трекер - <a href="http://popstas.github.io/time-tracker/">http://popstas.github.io/time-tracker/</a>
+Пользуюсь им уже 2 года, сегодня решил выложить на гитхаб и заодно исправил
+глюки, которые раздражали последние годы :)</p>
+
+<!-- more -->
+
+
+<p>Конечно, перед тем, как написать свое, долго искал что-то похожее.
+Самое близкое, что нашел - <a href="https://www.toggl.com/">https://www.toggl.com/</a></p>
+
+<p>Так как я собирался использовать ее постоянно и переключать задачу,
+пока человек, прибежавший со срочной задачей ждет, важна была каждая секунда.</p>
+
+<p>time-tracker - простая задачница, решающая большую задачу слежения за собой.</p>
+
+<h3>Фичи:</h3>
+
+<ul>
+<li>быстрое добавление задач</li>
+<li>подзадачи</li>
+<li>быстрое переключение между задачами</li>
+<li>исправление времени задним числом</li>
+<li>быстрое копирование сводки за день</li>
+<li>отслеживание времени по каждой задаче</li>
+<li>сводка по задачам</li>
+<li>навигация с клавиатуры</li>
+</ul>
+
+
+<h3>Неочевидные моменты</h3>
+
+<ul>
+<li>При отслеживании активна всегда только одна задача.</li>
+<li>Если включить Desktop notifications, каждые 10 минут будет всплывать сообщение
+о том, сколько активна задача с последнего ее запуска и сколько активна всего.</li>
+<li>Единственный способ создать второй список задач - открыть другой браузер.</li>
+</ul>
+
+
+<h3>Сценарии применения</h3>
+
+<ul>
+<li>постоянное переключение между задачами в течение дня</li>
+<li>многодневный проект, когда надо отследить общее потраченное время</li>
+<li>быстрый чеклист</li>
+</ul>
+
+
+<p>Для многодневного проекта кстати хочу попробовать связку
+<a href="https://trello.com/">Trello</a> + <a href="https://toggl.com/tools">Toggl</a>,
+пока писал этот пост, узнал, что у них есть интеграция.</p>
+
+<h3>Как я использую задачницу:</h3>
+
+<p>Прихожу в офис, включаю задачу &ldquo;текучка&rdquo;
+После этого ставлю фильтр, чтобы показались задачи с ненулевым временем,
+выделяю все, вставляю в блокнот (потом можно вспомнить, чем занимался в
+такой-то день, бывает полезно), сбрасываю таймеры (справа от строки ввода),
+удаляю ненужное, добавляю то, что сегодня собираюсь делать (1-2 задачи) и
+начинаю работать.</p>
+
+<p>Когда ко мне кто-то приходит, и начинает задавать вопросы, я тут же запускаю
+в задачах соответствующий проект или &ldquo;прочие консультации&rdquo;, если быстро определить
+не удалось.</p>
+
+<p>Чаще всего текущие проекты поделены на несколько подзадач, а внезапно возникающие
+просто обозначены проектами.</p>
+
+<h3>Мои постоянные задачи:</h3>
+
+<ul>
+<li><code>текучка</code> - вся не классифицируемая мелочь
+разбор почты, разбор задач в корпоративной системе.</li>
+<li><code>-------</code> - перекуры, наливание чая, прочее ничегонеделание</li>
+<li><code>обед</code> - ничегонеделание в обед</li>
+<li><code>прочие консультации</code> - разговоры на рабочие темы</li>
+<li><code>сисадминство</code> - работы по серверу</li>
+<li>несколько задач с проектами, которые постоянно всплывают</li>
+</ul>
+
+
+<h2>Техническая часть</h2>
+
+<ul>
+<li>Backbone (использовал в первый и последний раз)</li>
+<li>LESS, шрифтовые иконки</li>
+<li>Хранилище данных в LocalStorage браузера</li>
+</ul>
+
+
+<p>Одной из причин написать было желание потрогать backbone.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Stanislav Popov</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-22T09:40:45+05:00'><span class='date'>22.11.15</span> <span class='time'>9:40 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gtd/'>gtd</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/" title="Previous Post: Показать все окна gnome terminal в Ubuntu">&laquo; Показать все окна gnome terminal в Ubuntu</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/22/simple-time-tracker/">Простой тайм-трекер для отслеживания потраченного времени</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/">Показать все окна Gnome Terminal в Ubuntu</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/popstas">@popstas</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'popstas',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Stanislav Popov -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'popstas';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://popstas.github.io/blog/2015/11/22/simple-time-tracker/';
+        var disqus_url = 'http://popstas.github.io/blog/2015/11/22/simple-time-tracker/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

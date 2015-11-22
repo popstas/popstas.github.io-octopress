@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Записки о Linux]]></title>
-  <link href="http://popstas.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Gtd | Записки о Linux]]></title>
+  <link href="http://popstas.github.io/blog/categories/gtd/atom.xml" rel="self"/>
   <link href="http://popstas.github.io/"/>
   <updated>2015-11-22T10:45:55+05:00</updated>
   <id>http://popstas.github.io/</id>
@@ -110,90 +110,6 @@
 
 
 <p>Одной из причин написать было желание потрогать backbone.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Показать все окна Gnome Terminal в Ubuntu]]></title>
-    <link href="http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/"/>
-    <updated>2015-11-16T23:55:17+05:00</updated>
-    <id>http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu</id>
-    <content type="html"><![CDATA[<p>При работе за компом имею привычку открывать много терминалов,
-не группируя их по вкладкам, рабочим столам или менеджером терминалов типа tmux.
-При этом терминалы расположены по всему рабочему экрану.</p>
-
-<p>Из-за этого была такая проблема: при переключении на браузер или редактор,
-которые обычно занимают по полэкрана, все терминалы оказывались под большими окнами.</p>
-
-<p>Придумал решение: нужно, чтобы можно было выбрать один терминал (который обычно доступен по Alt-Tab),
-нажать хоткей и достать все окна этой же программы наверх.</p>
-
-<!-- more -->
-
-
-<h4>Для этого нужно:</h4>
-
-<ul>
-<li>определить текущее окно</li>
-<li>определить его класс</li>
-<li>найти все окна с тем же классом</li>
-<li>активировать каждое из окон</li>
-</ul>
-
-
-<p>Для манипуляции с окнами из консоли использовал <code>xdotool</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo aptitude install xdotool
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:</p>
-
-<figure class='code'><figcaption><span>windows-activate</span><a href='https://gist.github.com/popstas/9e1641e39abbda6392f1'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="c"># </span>
-</span><span class='line'><span class="c"># Activate all windows with process name of currently active window</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Получить текущее активное окно, его pid, имя процесса</span>
-</span><span class='line'><span class="nv">current_pid</span><span class="o">=</span><span class="k">$(</span>xdotool getwindowpid <span class="k">$(</span>xdotool getactivewindow<span class="k">))</span>
-</span><span class='line'><span class="nv">current_name</span><span class="o">=</span><span class="k">$(</span>ps -p <span class="nv">$current_pid</span> -o <span class="nv">comm</span><span class="o">=</span><span class="k">)</span>
-</span><span class='line'><span class="nv">clean_name</span><span class="o">=</span><span class="k">${</span><span class="nv">current_name</span><span class="p">%-</span><span class="k">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">name</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="k">:-</span><span class="nv">$clean_name</span><span class="k">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># найти окна процесса (только видимые), активировать каждое из них</span>
-</span><span class='line'>xdotool search --onlyvisible --class <span class="s2">&quot;$name&quot;</span> <span class="se">\</span>
-</span><span class='line'>  <span class="p">|</span> xargs -L1 --no-run-if-empty xdotool windowactivate
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Какие были проблемы:</h3>
-
-<ul>
-<li>У каждого процесса оказалось штук по 5 &ldquo;окон&rdquo;, которые на самом деле не видны</li>
-<li>Текущий процесс <code>gnome-terminal</code> виден в процессах как <code>gnome-terminal-server</code>,
-в процессах имя не входит и отображается как <code>gnome-terminal-</code>,
-в этом месте был вбит костыль, добавлена обрезка дефиса в конце.</li>
-</ul>
-
-
-<p>Скрипт был сохранен в /usr/local/bin/window-activate и через <code>ccsm</code> (Compiz config settings manager) повешен на хоткей.</p>
-
-<p>Скрипт можно вызывать, передав параметром имя процесса, иначе возьмет его из текущего окна.</p>
 ]]></content>
   </entry>
   
