@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Popstas]]></title>
-  <link href="http://popstas.github.io/atom.xml" rel="self"/>
-  <link href="http://popstas.github.io/"/>
-  <updated>2015-11-22T17:34:24+05:00</updated>
-  <id>http://popstas.github.io/</id>
+  <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2015-12-06T00:44:24+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Простой тайм-трекер для отслеживания потраченного времени]]></title>
-    <link href="http://popstas.github.io/blog/2015/11/22/simple-time-tracker/"/>
+    <link href="http://blog.popstas.ru/blog/2015/11/22/simple-time-tracker/"/>
     <updated>2015-11-22T09:40:45+05:00</updated>
-    <id>http://popstas.github.io/blog/2015/11/22/simple-time-tracker</id>
+    <id>http://blog.popstas.ru/blog/2015/11/22/simple-time-tracker</id>
     <content type="html"><![CDATA[<p>На работе у меня часто бывает такое, что не понятно, куда ушло время.
 Поэтому написал для себя небольшое приложение, тайм-трекер - <a href="http://time.popstas.ru/">http://time.popstas.ru/</a>
 Пользуюсь им уже 2 года, сегодня решил выложить на гитхаб и заодно исправил
@@ -115,9 +115,9 @@
   
   <entry>
     <title type="html"><![CDATA[Показать все окна Gnome Terminal в Ubuntu]]></title>
-    <link href="http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/"/>
+    <link href="http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/"/>
     <updated>2015-11-16T23:55:17+05:00</updated>
-    <id>http://popstas.github.io/blog/2015/11/16/show-all-terminal-windows-in-ubuntu</id>
+    <id>http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu</id>
     <content type="html"><![CDATA[<p>При работе за компом имею привычку открывать много терминалов,
 не группируя их по вкладкам, рабочим столам или менеджером терминалов типа tmux.
 При этом терминалы расположены по всему рабочему экрану.</p>
