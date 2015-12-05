@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://popstas.github.io
+url: http://blog.popstas.ru
 title: Popstas
 subtitle: Записки о Linux
 author: Stanislav Popov
@@ -70,7 +70,7 @@ github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user:
+twitter_user: popstas
 twitter_tweet_button: false
 
 # Google +1
