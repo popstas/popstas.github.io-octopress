@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2015-12-08T00:38:27+05:00</updated>
+  <updated>2015-12-11T01:31:06+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Интерактивная Bash History с поиском и скроллом]]></title>
+    <link href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/"/>
+    <updated>2015-12-10T19:55:20+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search</id>
+    <content type="html"><![CDATA[<p>Если кто не знает, в bash/zsh есть поиск по истории комманд, если нажать <code>Crrl+R</code> и начать набирать
+команду, отобразится последняя команда из истории, для навигации можно использовать
+<code>Ctrl+R</code>, <code>Ctrl+Shift+R</code>. При этом видно одновременно видно только одну команду из истории.</p>
+
+<p>Утилита <a href="https://github.com/mooz/percol#zsh-history-search">percol</a> решает эту проблему.</p>
+
+<!-- more -->
+
+
+<p><img src="http://blog.popstas.ru/images/2015-12/percol.gif"></p>
+
+<p>Собственно по ссылке выше готовый конфиг для zsh. Я немного изменил его под себя,
+чтобы использовать percol не только для поиска по истории:</p>
+
+<figure class='code'><figcaption><span>zsh-percol</span><a href='https://github.com/popstas/zsh-config/blob/master/.zshrc'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">function</span> exists <span class="o">{</span> which <span class="nv">$1</span> <span class="p">&amp;</span>&gt; /dev/null <span class="o">}</span>
+</span><span class='line'><span class="k">if</span> exists percol<span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="k">function</span> percol_select_history<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nb">local </span>tac
+</span><span class='line'>      exists gtac <span class="o">&amp;&amp;</span> <span class="nv">tac</span><span class="o">=</span><span class="s2">&quot;gtac&quot;</span> <span class="o">||</span> <span class="o">{</span> exists tac <span class="o">&amp;&amp;</span> <span class="nv">tac</span><span class="o">=</span><span class="s2">&quot;tac&quot;</span> <span class="o">||</span> <span class="o">{</span> <span class="nv">tac</span><span class="o">=</span><span class="s2">&quot;tail -r&quot;</span> <span class="o">}</span> <span class="o">}</span>
+</span><span class='line'>      <span class="nv">BUFFER</span><span class="o">=</span><span class="k">$(</span><span class="nb">fc</span> -l -n <span class="m">1</span> <span class="p">|</span> <span class="nb">eval</span> <span class="nv">$tac</span> <span class="p">|</span> percol --query <span class="s2">&quot;$LBUFFER&quot;</span><span class="k">)</span>
+</span><span class='line'>      <span class="nv">CURSOR</span><span class="o">=</span><span class="nv">$#BUFFER</span>         <span class="c"># move cursor</span>
+</span><span class='line'>      zle -R -c               <span class="c"># refresh</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  zle -N percol_select_history
+</span><span class='line'>  bindkey <span class="s1">&#39;^R&#39;</span> percol_select_history
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># percol based grep</span>
+</span><span class='line'>  g<span class="o">()</span> <span class="o">{</span> percol --match-method regex --query<span class="o">=</span><span class="s2">&quot;$*&quot;</span><span class="p">;</span> <span class="o">}</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Код я добавил в <a href="https://github.com/popstas/zsh-config">свой .zshrc</a>. Если <a href="https://github.com/robbyrussell/oh-my-zsh/pull/4582">этот пулл реквест</a> примут, то данный код появится в составе
+<a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a> в виде плагина <code>percol</code>.</p>
+
+<p>Код полностью взят со страницы percol, от себя добавил функцию g(), она кстати конфиликтует с плагином git для oh-my-zsh,
+зато теперь я могу писать что-то вроде:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>find . -type file <span class="p">|</span> g
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>для интерактивного выбора результатов поиска и просто для замены grep. При этом доступен мультивыбор по <code>Ctrl+Space</code>.</p>
+
+<p>Пример посложнее:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>vim <span class="k">$(</span>find -name <span class="s2">&quot;*.markdown&quot;</span> <span class="p">|</span> g<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>После запуска откроется список всех <code>.markdown</code> файлов в текущей и вложенных папках, выбранный файл сразу откроется в Vim.
+Это как будто у вас появилась возможность приделывать midnight commander к результатам поиска!</p>
+
+<p>Смотрите больше интересных примеров <a href="https://github.com/mooz/percol">на странице проекта</a>.</p>
+
+<p>Надо сказать, что на github есть программы с таким же функционалом, как у percol, я об этом узнал на странице самого percol.
+Там есть peco, клон percol на Go (а значит поставляется в виде одного бинарника). Мне проще через pip установить percol, так
+что с аналогами не сравнивал.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Простой тайм-трекер для отслеживания потраченного времени]]></title>

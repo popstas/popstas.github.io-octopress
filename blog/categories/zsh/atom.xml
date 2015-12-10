@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Bash | Popstas]]></title>
-  <link href="http://blog.popstas.ru/blog/categories/bash/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Zsh | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/zsh/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
   <updated>2015-12-11T01:31:06+05:00</updated>
   <id>http://blog.popstas.ru/</id>
@@ -72,73 +72,6 @@ vim $(find -name "*.markdown" | g)
 <p>Надо сказать, что на github есть программы с таким же функционалом, как у percol, я об этом узнал на странице самого percol.
 Там есть peco, клон percol на Go (а значит поставляется в виде одного бинарника). Мне проще через pip установить percol, так
 что с аналогами не сравнивал.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Показать все окна Gnome Terminal в Ubuntu]]></title>
-    <link href="http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/"/>
-    <updated>2015-11-16T23:55:17+05:00</updated>
-    <id>http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu</id>
-    <content type="html"><![CDATA[<p>При работе за компом имею привычку открывать много терминалов,
-не группируя их по вкладкам, рабочим столам или менеджером терминалов типа tmux.
-При этом терминалы расположены по всему рабочему экрану.</p>
-
-<p>Из-за этого была такая проблема: при переключении на браузер или редактор,
-которые обычно занимают по полэкрана, все терминалы оказывались под большими окнами.</p>
-
-<p>Придумал решение: нужно, чтобы можно было выбрать один терминал (который обычно доступен по Alt-Tab),
-нажать хоткей и достать все окна этой же программы наверх.</p>
-
-<!-- more -->
-
-
-<h4>Для этого нужно:</h4>
-
-<ul>
-<li>определить текущее окно</li>
-<li>определить его класс</li>
-<li>найти все окна с тем же классом</li>
-<li>активировать каждое из окон</li>
-</ul>
-
-
-<p>Для манипуляции с окнами из консоли использовал <code>xdotool</code>:
-<code>bash
-sudo aptitude install xdotool
-</code></p>
-
-<p>Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:</p>
-
-<pre><code class="bash windows-activate https://gist.github.com/popstas/9e1641e39abbda6392f1">#!/bin/bash
-# 
-# Activate all windows with process name of currently active window
-
-# Получить текущее активное окно, его pid, имя процесса
-current_pid=$(xdotool getwindowpid $(xdotool getactivewindow))
-current_name=$(ps -p $current_pid -o comm=)
-clean_name=${current_name%-}
-
-name=${1:-$clean_name}
-
-# найти окна процесса (только видимые), активировать каждое из них
-xdotool search --onlyvisible --class "$name" \
-  | xargs -L1 --no-run-if-empty xdotool windowactivate
-</code></pre>
-
-<h3>Какие были проблемы:</h3>
-
-<ul>
-<li>У каждого процесса оказалось штук по 5 &ldquo;окон&rdquo;, которые на самом деле не видны</li>
-<li>Текущий процесс <code>gnome-terminal</code> виден в процессах как <code>gnome-terminal-server</code>,
-в процессах имя не входит и отображается как <code>gnome-terminal-</code>,
-в этом месте был вбит костыль, добавлена обрезка дефиса в конце.</li>
-</ul>
-
-
-<p>Скрипт был сохранен в /usr/local/bin/window-activate и через <code>ccsm</code> (Compiz config settings manager) повешен на хоткей.</p>
-
-<p>Скрипт можно вызывать, передав параметром имя процесса, иначе возьмет его из текущего окна.</p>
 ]]></content>
   </entry>
   
