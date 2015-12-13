@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2015-12-11T01:31:06+05:00</updated>
+  <updated>2015-12-13T12:29:03+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Интерактивная Bash History с поиском и скроллом]]></title>
+    <title type="html"><![CDATA[Интерактивная Zsh History с поиском и скроллом, Percol]]></title>
     <link href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/"/>
     <updated>2015-12-10T19:55:20+05:00</updated>
     <id>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search</id>
