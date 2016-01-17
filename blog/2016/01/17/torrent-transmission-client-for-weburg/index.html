@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana - Popstas</title>
+  <meta name="author" content="Stanislav Popov">
+
+  
+  <meta name="description" content="У моего интернет-провайдера Планета есть бонусная программа поощрения раздачи торрентов с weburg.net, дающая бонусы,
+их можно тратить на абонентскую &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Popstas" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-70438594-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Popstas</a></h1>
+  
+    <h2>Записки о Linux</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.popstas.ru">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-17T08:22:25+05:00'><span class='date'>17.01.16</span> <span class='time'>8:22 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>У моего интернет-провайдера Планета есть бонусная программа поощрения раздачи торрентов с <a href="http://weburg.net">weburg.net</a>, дающая бонусы,
+их можно тратить на абонентскую плату. У меня комп постоянно включен, я сразу стал участвовать.</p>
+
+<p>Поддержку раздач можно разбить на несколько задач:</p>
+
+<ol>
+<li>периодически скачивать новинки фильмов</li>
+<li>скачивать новые серии популярных сериалов</li>
+<li>удалять то, что плохо раздается</li>
+</ol>
+
+
+<p>Через пару месяцев мне это надоело, задумался об автоматизации этого процесса и вот в новогодние каникулы родился
+<a href="https://github.com/popstas/transmission-cli">transmission-cli</a> - консольная утилита, решающая часть этих задач.</p>
+
+<iframe src="https://ghbtns.com/github-btn.html?user=popstas&repo=transmission-cli&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+
+
+<p><a href="https://travis-ci.org/popstas/transmission-cli"><img src="https://travis-ci.org/popstas/transmission-cli.svg?branch=master" alt="Build Status" /></a>
+<a href="https://coveralls.io/github/popstas/transmission-cli?branch=master"><img src="https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&amp;service=github" alt="Coverage Status" /></a></p>
+
+<p><img src="https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true"></p>
+
+<!-- more -->
+
+
+<h2>Возможности</h2>
+
+<ul>
+<li>скачивание популярных торрентов с <a href="http://weburg.net">http://weburg.net</a></li>
+<li>удаление дублирующихся раздач (для сериалов)</li>
+<li>отправка метрик в InfluxDB (для слежения за популярностью)</li>
+</ul>
+
+
+<h1>Установка</h1>
+
+<p>Установить клиент можно так:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">latest_phar</span><span class="o">=</span><span class="k">$(</span>curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest <span class="p">|</span> grep <span class="s1">&#39;browser_&#39;</span> <span class="p">|</span> cut -d<span class="se">\&quot;</span> -f4<span class="k">)</span>
+</span><span class='line'>wget -O /usr/local/bin/transmission-cli <span class="s2">&quot;$latest_phar&quot;</span>
+</span><span class='line'>chmod +x /usr/local/bin/transmission-cli
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Пользоваться графиками можно с трудом, потому что InfluxDB и Grafana вам придется устанавливать самостоятельно.
+Я ставил то и другое в docker на свою виртуалку и пробрасывал порты на localhost,
+сейчас localhost вшит в <a href="https://github.com/popstas/transmission-cli/blob/master/src/Config.php">конфиг</a>,
+который по сути сейчас находится в коде.</p>
+
+<p>Поставить можно так, заменив папки <code>/Users/popstas/lib/grafana</code> и <code>/var/lib/influxdb</code> на ваши,
+это укажет, где будут храниться данные InfluxDB и Grafana:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d <span class="se">\ </span>-p 3000:3000 <span class="se">\</span>
+</span><span class='line'>           -v /Users/popstas/lib/grafana:/var/lib/grafana <span class="se">\</span>
+</span><span class='line'>            --name grafana grafana/grafana
+</span><span class='line'>
+</span><span class='line'>docker run -d -p 8083:8083 -p 8086:8086 <span class="se">\</span>
+</span><span class='line'>           -v /var/lib/influxdb:/data <span class="se">\</span>
+</span><span class='line'>           --name influxdb tutum/influxdb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Папку от InfluxDB я оставил в виртуалке, т.к. оказалось, что InfluxDB не может работать с папкой, смонтированной в
+VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>Чтобы собиралась статистика, нужно добавить в cron задания, я собираю с 2 компов, поэтому добавляю 2 раза.</p>
+
+<p>Также, чтобы не было конфликтов, статистика не будет отсылаться, если найдет раздачи с одинаковыми названиями,
+которые обычно остаются от сериалов. Поэтому их нужно чистить перед отпправкой статистики.</p>
+
+<p>Раздачи у меня скачиваются в папку, за которой следят оба Transmission, как только туда попадает торрент, раздача
+сразу начинается (можно сделать, чтобы спрашивала разрешение, настраивается в Transmission).</p>
+
+<p>В итоге у меня получился такой cron:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;$PATH:/usr/local/bin&quot;</span>
+</span><span class='line'><span class="m">59</span> * * * * transmission-cli remove-duplicates --host<span class="o">=</span>localhost
+</span><span class='line'><span class="m">59</span> * * * * transmission-cli remove-duplicates --host<span class="o">=</span>wrtnsq
+</span><span class='line'><span class="m">0</span>  * * * * transmission-cli send-metrics --host<span class="o">=</span>localhost
+</span><span class='line'><span class="m">0</span>  * * * * transmission-cli send-metrics --host<span class="o">=</span>wrtnsq
+</span><span class='line'><span class="m">1</span>  <span class="m">2</span> * * * transmission-cli download-weburg --dest<span class="o">=</span>/Volumes/media/_planeta/_torrents
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Результаты статистики</h2>
+
+<p>Никогда не знал о своих раздачах ничего, кроме рейтинга и объема розданного за все время.
+Графики показали интересные вещи (о которых можно было и так догадаться):</p>
+
+<ul>
+<li>с 18 до 22 пик раздач, с 22 до 2 спад, с 2 до 9 все спят</li>
+<li>в праздники и выходные больше качают днем и до ночи, но после 2 все равно все спят</li>
+<li>популярные фильмы популярны обычно не больше недели</li>
+<li>есть популярные фильмы, которые популярны и через несколько месяцев, например &ldquo;Интерстеллар&rdquo;</li>
+</ul>
+
+
+<p>Сейчас я могу выбрать в Grafana период в 7 дней, отсортировать раздачи по розданным Гб и получить список
+раздач-кандидатов на удаление.</p>
+
+<p>Со статистикой еще надо работать, что еще хочется сделать:</p>
+
+<ul>
+<li><p>нормальную группировку по периодам, сейчас группируется только за час или за весь выбранный период,
+нельзя выбрать последнюю неделю и посмотреть посуточные метрики. Я скидываю метрики и сначала не понимал,
+почему так, но тут как раз вышла статья
+<a href="http://habrahabr.ru/post/274303/">Почему расчет перцентилей работает не так как вы ожидаете?</a> и многое мне объяснила.</p></li>
+<li><p>добавить в метрики инфу о весе раздач и вывести эффективность раздач: например, фильм в 1080p весом в 10 Гб
+скачали на 50 Гб за неделю, а 2 Гб фильм низкого качества скачали на 10 Гб, если не учитывать вес раздач, то выходит,
+что первая раздача в 5 раз эффективнее, но если учитвать, то оказвается, что они равны.</p></li>
+</ul>
+
+
+<h2>Техническая часть:</h2>
+
+<ul>
+<li>Symfony console - каркас консольной утилиты</li>
+<li>InfluxDB - хранилище метрик</li>
+<li>Grafana - рисование графиков</li>
+<li>Composer - управление зависимостями</li>
+<li>Box - <a href="http://habrahabr.ru/post/274745/">сборка PHAR</a></li>
+<li>PHPCS, PHPMD - линтеры PHP</li>
+<li>Travis CI - публицация PHAR на Github</li>
+<li>Coveralls - сервис слежения за покрытием кода тестами</li>
+</ul>
+
+
+<p>Половину из этого я ни разу не использовал, вторую половину - немного. Поэтому граблей хватает.</p>
+
+<h3>Symfony console</h3>
+
+<p>Тут мне сказать особо нечего, фреймворки я только начинаю осваивать, пока ничего не понятно с Dependency Injection,
+чувствую, что у меня переменные в функции местами прокидываются криво, а местами не прокидываются, где стоило бы.</p>
+
+<p>Не понятно, как тестить через PHPUnit, как мокать объекты.</p>
+
+<p>Пока радуюсь, что освоился с namespaces и использовал на практике PSR-2 и PSR-4.</p>
+
+<p>Почти все идеи взяты из исходников
+<a href="https://github.com/composer/composer">composer</a> и
+<a href="https://github.com/MartialGeek/transmission-api">transmission-api</a></p>
+
+<h3>InfluxDB</h3>
+
+<p>InfluxDB не может работать с папкой, смонтированной в VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>InfluxDB я раньше не видел, хотел посмотреть ее как замену для хранилища Whisper из стека
+Diamond -> Carbon -> Whisper -> Graphite -> Grafana для рисования графиков сервера.</p>
+
+<p>Компания, стоящая за InfluxDB с недавнего времени назвается InfluxData и предлагает свой стек
+<a href="https://influxdata.com/time-series-platform/">TICK</a>, в который
+входит еще и алертинг по отклонениям метрик. Могу сказать о нем то, что Telegraf работает, InfluxDB работает без тормозов,
+собирая с моего компа метрики раз в 10 секунд, Chronograf какой-то неполноценный, по сравнению с Grafana,
+а Kapacitor я еще не смотрел.</p>
+
+<h3>Grafana</h3>
+
+<p>В Grafana 2.6 появилось много нового, по сравнению с 2.0, которую я видел в августе. А вообще, если кто использовал
+Cacti или Graphite и не видел Grafana, посмотрите, красота неописуемая.</p>
+
+<h3>Composer</h3>
+
+<p>Некоторые dev-пакеты (phpunit) потребовали php 5.6 для запуска, поэтому поставил 5.6 минимальной необходимой версией,
+хотя по факту клиент может работать и на 5.5, а на 5.4 уже не может.</p>
+
+<h3>Box</h3>
+
+<p>Если собирать PHAR, используя box, установленный через composer, в архив попадает много ненужных dev-пакетов.
+Сначала я пытался бороться с этим исключением пакетов через box.json, потом понял, что это бесполезно
+(все пакеты не исключишь, а однажды исключишь нужный), в итоге пришел к такой схеме:</p>
+
+<ul>
+<li>ставим пакеты через <code>composer install --no-dev</code></li>
+<li>качаем box.phar</li>
+<li>собираем transmission-cli.phar</li>
+<li>доставляем пакеты через composer update</li>
+</ul>
+
+
+<p>Это в 3 раза уменьшило вес собранного архива.</p>
+
+<h3>PHPCS, PHPMD</h3>
+
+<p>PHP Code Sniffer умеет анализировать ваш код на соответствие определенным стандартам, в моем случае PSR-2,
+ставится через Composer, используется так:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./vendor/bin/phpcs --standard<span class="o">=</span>psr2 ./src
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>А PHP Mess Detector у меня не запустился.</p>
+
+<h3>Travis CI</h3>
+
+<p>Впервые удалось использовать его по назначению. Как-то пробовал использовать его для тестов пакета bash скриптов
+<a href="https://github.com/popstas/drupal-scripts">drupal-scripts</a>, но быстро сдался, т.к. в окружении travis они вели себя не так,
+как на локалке (в итоге перекинул тесты на TeamCity).</p>
+
+<p>На этом проекте travis прогоняет тесты phpunit
+(тестов по сути еще нет, но без phpunit в каком-либо виде travis по умолчанию фейлит сборку)
+и если к коммиту был проставлен git tag,
+публикует PHAR как приложение к релизу на Github, чуть подробнее я написал
+в <a href="http://habrahabr.ru/post/274745/#comment_8736379">этом комменте</a>.</p>
+
+<h3>Coveralls</h3>
+
+<p>До покрытия тестами я еще не добирался, я тесты-то еще только начинаю использовать, решил попробовать на этом проекте.</p>
+
+<p>Чтобы добавить coveralls в самом простом случае (в доках есть и сложные), достаточно сделать так, чтобы PHPUnit
+генерил файл <code>build/logs/clover.xml</code>, для этого надо добавить строчку в phpunit.xml, в секцию logging:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;logging&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;log</span> <span class="na">type=</span><span class="s">&quot;coverage-clover&quot;</span> <span class="na">target=</span><span class="s">&quot;build/logs/clover.xml&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/logging&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ну и конечно зарегаться на <a href="https://coveralls.io/">https://coveralls.io/</a> и активировать там проект.
+Если путь будет другой, придется читать доки и создавать файл настройки .coveralls.yml</p>
+
+<p>В результате я имею красивую красную ачивку на странице проекта
+и <a href="https://coveralls.io/github/popstas/transmission-cli">историю деградации покрытия</a> :)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Stanislav Popov</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-01-17T08:22:25+05:00'><span class='date'>17.01.16</span> <span class='time'>8:22 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/box/'>box</a>, <a class='category' href='/blog/categories/ci/'>ci</a>, <a class='category' href='/blog/categories/composer/'>composer</a>, <a class='category' href='/blog/categories/coveralls/'>coveralls</a>, <a class='category' href='/blog/categories/docker/'>docker</a>, <a class='category' href='/blog/categories/grafana/'>grafana</a>, <a class='category' href='/blog/categories/influxdata/'>influxdata</a>, <a class='category' href='/blog/categories/influxdb/'>influxdb</a>, <a class='category' href='/blog/categories/phar/'>phar</a>, <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/phpcs/'>phpcs</a>, <a class='category' href='/blog/categories/phpmd/'>phpmd</a>, <a class='category' href='/blog/categories/symfony/'>symfony</a>, <a class='category' href='/blog/categories/travis/'>travis</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/" title="Previous Post: Быстрое обновление PhpStorm EAP на Mac OS через bash">&laquo; Быстрое обновление PhpStorm EAP на Mac OS через bash</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/17/torrent-transmission-client-for-weburg/">Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/">Быстрое обновление PhpStorm EAP на Mac OS через Bash</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/10/interactive-bash-history-with-search/">Интерактивная Zsh History с поиском и скроллом, Percol</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/22/simple-time-tracker/">Простой тайм-трекер для отслеживания потраченного времени</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/">Показать все окна Gnome Terminal в Ubuntu</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/popstas">@popstas</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'popstas',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Stanislav Popov -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'popstas';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/';
+        var disqus_url = 'http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

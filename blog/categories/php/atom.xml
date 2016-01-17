@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Php | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/php/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2016-01-17T10:23:21+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
+  <author>
+    <name><![CDATA[Stanislav Popov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/"/>
+    <updated>2016-01-17T08:22:25+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg</id>
+    <content type="html"><![CDATA[<p>У моего интернет-провайдера Планета есть бонусная программа поощрения раздачи торрентов с <a href="http://weburg.net">weburg.net</a>, дающая бонусы,
+их можно тратить на абонентскую плату. У меня комп постоянно включен, я сразу стал участвовать.</p>
+
+<p>Поддержку раздач можно разбить на несколько задач:</p>
+
+<ol>
+<li>периодически скачивать новинки фильмов</li>
+<li>скачивать новые серии популярных сериалов</li>
+<li>удалять то, что плохо раздается</li>
+</ol>
+
+
+<p>Через пару месяцев мне это надоело, задумался об автоматизации этого процесса и вот в новогодние каникулы родился
+<a href="https://github.com/popstas/transmission-cli">transmission-cli</a> - консольная утилита, решающая часть этих задач.</p>
+
+<iframe src="https://ghbtns.com/github-btn.html?user=popstas&repo=transmission-cli&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+
+
+<p><a href="https://travis-ci.org/popstas/transmission-cli"><img src="https://travis-ci.org/popstas/transmission-cli.svg?branch=master" alt="Build Status" /></a>
+<a href="https://coveralls.io/github/popstas/transmission-cli?branch=master"><img src="https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&amp;service=github" alt="Coverage Status" /></a></p>
+
+<p><img class="<a" src="href="https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true">https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true</a>"></p>
+
+<!-- more -->
+
+
+<h2>Возможности</h2>
+
+<ul>
+<li>скачивание популярных торрентов с <a href="http://weburg.net">http://weburg.net</a></li>
+<li>удаление дублирующихся раздач (для сериалов)</li>
+<li>отправка метрик в InfluxDB (для слежения за популярностью)</li>
+</ul>
+
+
+<h1>Установка</h1>
+
+<p>Установить клиент можно так:
+<code>bash
+latest_phar=$(curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest | grep 'browser_' | cut -d\" -f4)
+wget -O /usr/local/bin/transmission-cli "$latest_phar"
+chmod +x /usr/local/bin/transmission-cli
+</code></p>
+
+<p>Пользоваться графиками можно с трудом, потому что InfluxDB и Grafana вам придется устанавливать самостоятельно.
+Я ставил то и другое в docker на свою виртуалку и пробрасывал порты на localhost,
+сейчас localhost вшит в <a href="https://github.com/popstas/transmission-cli/blob/master/src/Config.php">конфиг</a>,
+который по сути сейчас находится в коде.</p>
+
+<p>Поставить можно так, заменив папки <code>/Users/popstas/lib/grafana</code> и <code>/var/lib/influxdb</code> на ваши,
+это укажет, где будут храниться данные InfluxDB и Grafana:
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker run -d \ -p 3000:3000 \
+</span><span class='line'>           -v /Users/popstas/lib/grafana:/var/lib/grafana \
+</span><span class='line'>            &ndash;name grafana grafana/grafana&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;docker run -d -p 8083:8083 -p 8086:8086 \
+</span><span class='line'>           -v /var/lib/influxdb:/data \
+</span><span class='line'>           &ndash;name influxdb tutum/influxdb</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Папку от InfluxDB я оставил в виртуалке, т.к. оказалось, что InfluxDB не может работать с папкой, смонтированной в
+VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>Чтобы собиралась статистика, нужно добавить в cron задания, я собираю с 2 компов, поэтому добавляю 2 раза.</p>
+
+<p>Также, чтобы не было конфликтов, статистика не будет отсылаться, если найдет раздачи с одинаковыми названиями,
+которые обычно остаются от сериалов. Поэтому их нужно чистить перед отпправкой статистики.</p>
+
+<p>Раздачи у меня скачиваются в папку, за которой следят оба Transmission, как только туда попадает торрент, раздача
+сразу начинается (можно сделать, чтобы спрашивала разрешение, настраивается в Transmission).</p>
+
+<p>В итоге у меня получился такой cron:
+<code>
+PATH="$PATH:/usr/local/bin"
+59 * * * * transmission-cli remove-duplicates --host=localhost
+59 * * * * transmission-cli remove-duplicates --host=wrtnsq
+0  * * * * transmission-cli send-metrics --host=localhost
+0  * * * * transmission-cli send-metrics --host=wrtnsq
+1  2 * * * transmission-cli download-weburg --dest=/Volumes/media/_planeta/_torrents
+</code></p>
+
+<h2>Результаты статистики</h2>
+
+<p>Никогда не знал о своих раздачах ничего, кроме рейтинга и объема розданного за все время.
+Графики показали интересные вещи (о которых можно было и так догадаться):</p>
+
+<ul>
+<li>с 18 до 22 пик раздач, с 22 до 2 спад, с 2 до 9 все спят</li>
+<li>в праздники и выходные больше качают днем и до ночи, но после 2 все равно все спят</li>
+<li>популярные фильмы популярны обычно не больше недели</li>
+<li>есть популярные фильмы, которые популярны и через несколько месяцев, например &ldquo;Интерстеллар&rdquo;</li>
+</ul>
+
+
+<p>Сейчас я могу выбрать в Grafana период в 7 дней, отсортировать раздачи по розданным Гб и получить список
+раздач-кандидатов на удаление.</p>
+
+<p>Со статистикой еще надо работать, что еще хочется сделать:</p>
+
+<ul>
+<li><p>нормальную группировку по периодам, сейчас группируется только за час или за весь выбранный период,
+нельзя выбрать последнюю неделю и посмотреть посуточные метрики. Я скидываю метрики и сначала не понимал,
+почему так, но тут как раз вышла статья
+<a href="http://habrahabr.ru/post/274303/">Почему расчет перцентилей работает не так как вы ожидаете?</a> и многое мне объяснила.</p></li>
+<li><p>добавить в метрики инфу о весе раздач и вывести эффективность раздач: например, фильм в 1080p весом в 10 Гб
+скачали на 50 Гб за неделю, а 2 Гб фильм низкого качества скачали на 10 Гб, если не учитывать вес раздач, то выходит,
+что первая раздача в 5 раз эффективнее, но если учитвать, то оказвается, что они равны.</p></li>
+</ul>
+
+
+<h2>Техническая часть:</h2>
+
+<ul>
+<li>Symfony console - каркас консольной утилиты</li>
+<li>InfluxDB - хранилище метрик</li>
+<li>Grafana - рисование графиков</li>
+<li>Composer - управление зависимостями</li>
+<li>Box - <a href="http://habrahabr.ru/post/274745/">сборка PHAR</a></li>
+<li>PHPCS, PHPMD - линтеры PHP</li>
+<li>Travis CI - публицация PHAR на Github</li>
+<li>Coveralls - сервис слежения за покрытием кода тестами</li>
+</ul>
+
+
+<p>Половину из этого я ни разу не использовал, вторую половину - немного. Поэтому граблей хватает.</p>
+
+<h3>Symfony console</h3>
+
+<p>Тут мне сказать особо нечего, фреймворки я только начинаю осваивать, пока ничего не понятно с Dependency Injection,
+чувствую, что у меня переменные в функции местами прокидываются криво, а местами не прокидываются, где стоило бы.</p>
+
+<p>Не понятно, как тестить через PHPUnit, как мокать объекты.</p>
+
+<p>Пока радуюсь, что освоился с namespaces и использовал на практике PSR-2 и PSR-4.</p>
+
+<p>Почти все идеи взяты из исходников
+<a href="https://github.com/composer/composer">composer</a> и
+<a href="https://github.com/MartialGeek/transmission-api">transmission-api</a></p>
+
+<h3>InfluxDB</h3>
+
+<p>InfluxDB не может работать с папкой, смонтированной в VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>InfluxDB я раньше не видел, хотел посмотреть ее как замену для хранилища Whisper из стека
+Diamond -> Carbon -> Whisper -> Graphite -> Grafana для рисования графиков сервера.</p>
+
+<p>Компания, стоящая за InfluxDB с недавнего времени назвается InfluxData и предлагает свой стек
+<a href="https://influxdata.com/time-series-platform/">TICK</a>, в который
+входит еще и алертинг по отклонениям метрик. Могу сказать о нем то, что Telegraf работает, InfluxDB работает без тормозов,
+собирая с моего компа метрики раз в 10 секунд, Chronograf какой-то неполноценный, по сравнению с Grafana,
+а Kapacitor я еще не смотрел.</p>
+
+<h3>Grafana</h3>
+
+<p>В Grafana 2.6 появилось много нового, по сравнению с 2.0, которую я видел в августе. А вообще, если кто использовал
+Cacti или Graphite и не видел Grafana, посмотрите, красота неописуемая.</p>
+
+<h3>Composer</h3>
+
+<p>Некоторые dev-пакеты (phpunit) потребовали php 5.6 для запуска, поэтому поставил 5.6 минимальной необходимой версией,
+хотя по факту клиент может работать и на 5.5, а на 5.4 уже не может.</p>
+
+<h3>Box</h3>
+
+<p>Если собирать PHAR, используя box, установленный через composer, в архив попадает много ненужных dev-пакетов.
+Сначала я пытался бороться с этим исключением пакетов через box.json, потом понял, что это бесполезно
+(все пакеты не исключишь, а однажды исключишь нужный), в итоге пришел к такой схеме:</p>
+
+<ul>
+<li>ставим пакеты через <code>composer install --no-dev</code></li>
+<li>качаем box.phar</li>
+<li>собираем transmission-cli.phar</li>
+<li>доставляем пакеты через composer update</li>
+</ul>
+
+
+<p>Это в 3 раза уменьшило вес собранного архива.</p>
+
+<h3>PHPCS, PHPMD</h3>
+
+<p>PHP Code Sniffer умеет анализировать ваш код на соответствие определенным стандартам, в моем случае PSR-2,
+ставится через Composer, используется так:
+<code>
+./vendor/bin/phpcs --standard=psr2 ./src
+</code></p>
+
+<p>А PHP Mess Detector у меня не запустился.</p>
+
+<h3>Travis CI</h3>
+
+<p>Впервые удалось использовать его по назначению. Как-то пробовал использовать его для тестов пакета bash скриптов
+<a href="https://github.com/popstas/drupal-scripts">drupal-scripts</a>, но быстро сдался, т.к. в окружении travis они вели себя не так,
+как на локалке (в итоге перекинул тесты на TeamCity).</p>
+
+<p>На этом проекте travis прогоняет тесты phpunit
+(тестов по сути еще нет, но без phpunit в каком-либо виде travis по умолчанию фейлит сборку)
+и если к коммиту был проставлен git tag,
+публикует PHAR как приложение к релизу на Github, чуть подробнее я написал
+в <a href="http://habrahabr.ru/post/274745/#comment_8736379">этом комменте</a>.</p>
+
+<h3>Coveralls</h3>
+
+<p>До покрытия тестами я еще не добирался, я тесты-то еще только начинаю использовать, решил попробовать на этом проекте.</p>
+
+<p>Чтобы добавить coveralls в самом простом случае (в доках есть и сложные), достаточно сделать так, чтобы PHPUnit
+генерил файл <code>build/logs/clover.xml</code>, для этого надо добавить строчку в phpunit.xml, в секцию logging:
+<code>xml
+&lt;logging&gt;
+    &lt;log type="coverage-clover" target="build/logs/clover.xml"/&gt;
+&lt;/logging&gt;
+</code>
+Ну и конечно зарегаться на <a href="https://coveralls.io/">https://coveralls.io/</a> и активировать там проект.
+Если путь будет другой, придется читать доки и создавать файл настройки .coveralls.yml</p>
+
+<p>В результате я имею красивую красную ачивку на странице проекта
+и <a href="https://coveralls.io/github/popstas/transmission-cli">историю деградации покрытия</a> :)</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/</loc>
+    <lastmod>2016-01-17T08:22:25+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/</loc>
     <lastmod>2016-01-17T07:50:17+05:00</lastmod>
   </url>
@@ -42,5 +46,47 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/phpstorm/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/php/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/influxdb/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/influxdata/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/grafana/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/travis/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/ci/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/symfony/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/docker/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/box/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/phar/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/phpcs/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/phpmd/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/composer/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/coveralls/</loc>
   </url>
 </urlset>
