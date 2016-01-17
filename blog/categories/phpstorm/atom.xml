@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Phpstorm | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/phpstorm/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2016-01-17T08:16:44+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
+  <author>
+    <name><![CDATA[Stanislav Popov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Быстрое обновление PhpStorm EAP на Mac OS через Bash]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/"/>
+    <updated>2016-01-17T07:50:17+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os</id>
+    <content type="html"><![CDATA[<p>Надоело постоянно обновлять PhpStorm руками. На Ubuntu последнее время делал это с помощью ansible,
+под Mac этот плейбук не расчитан, к тому же версию ему надо было указвать вручную.
+Поэтому написал скрипт, не совместимый с Ubuntu :)</p>
+
+<p><img class="<a" src="href="http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png">http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png</a>"></p>
+
+<!-- more -->
+
+
+<p>Что он делает:</p>
+
+<ul>
+<li>идет на страницу EAP, находит там версию</li>
+<li>проверяет, что на компе стоит другая версия EAP</li>
+<li>качает dmg в папку Загрузки</li>
+<li>монтирует образ</li>
+<li>завершает PhpStorm, если он открыт</li>
+<li>удаляет текущую версию и копирует новую в папку /Applications</li>
+<li>запускает новую версию</li>
+</ul>
+
+
+<p>Поставить можно так:
+<code>
+curl -s "https://gist.githubusercontent.com/popstas/613a72a34576b85caec4/raw/644f457ed0187ab0d1207576e925c06260451131/phpstorm-eap-update.sh" &gt; /usr/local/bin/phpstorm-eap-update
+chmod +x /usr/local/bin/phpstorm-eap-update
+</code></p>
+
+<p>После чего можно обновлять просто запуском <code>phpstorm-eap-update</code>.
+По идее можно даже в cron его засунуть, чтобы совсем автомат, но я и так узнаю о новой версии из rss.</p>
+
+<p>Код лежит здесь - <a href="https://gist.github.com/popstas/613a72a34576b85caec4">https://gist.github.com/popstas/613a72a34576b85caec4</a></p>
+
+<p>В PhpStorm 11 из фич ничего особенного не нашел, зато с этой версии он перешел на использование Java 8,
+не знаю, в этом ли дело, но у меня он вроде перестал тормозить.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Zsh | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/zsh/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2015-12-13T12:29:03+05:00</updated>
+  <updated>2016-01-17T08:16:44+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -18,16 +18,16 @@
     <link href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/"/>
     <updated>2015-12-10T19:55:20+05:00</updated>
     <id>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search</id>
-    <content type="html"><![CDATA[<p>Если кто не знает, в bash/zsh есть поиск по истории комманд, если нажать <code>Crrl+R</code> и начать набирать
+    <content type="html"><![CDATA[<p>Если кто не знает, в bash/zsh есть поиск по истории комманд, если нажать <code>Ctrl+R</code> и начать набирать
 команду, отобразится последняя команда из истории, для навигации можно использовать
 <code>Ctrl+R</code>, <code>Ctrl+Shift+R</code>. При этом видно одновременно видно только одну команду из истории.</p>
 
 <p>Утилита <a href="https://github.com/mooz/percol#zsh-history-search">percol</a> решает эту проблему.</p>
 
+<p><img src="/images/2015-12/percol.gif"></p>
+
 <!-- more -->
 
-
-<p><img src="/images/2015-12/percol.gif"></p>
 
 <p>Собственно по ссылке выше готовый конфиг для zsh. Я немного изменил его под себя,
 чтобы использовать percol не только для поиска по истории:</p>

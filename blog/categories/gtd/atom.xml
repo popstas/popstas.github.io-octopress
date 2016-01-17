@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gtd | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/gtd/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2015-12-13T12:29:03+05:00</updated>
+  <updated>2016-01-17T08:16:44+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -22,6 +22,8 @@
 Поэтому написал для себя небольшое приложение, тайм-трекер - <a href="http://time.popstas.ru/">http://time.popstas.ru/</a>
 Пользуюсь им уже 2 года, сегодня решил выложить на гитхаб и заодно исправил
 глюки, которые раздражали последние годы :)</p>
+
+<p><img class="<a" src="href="https://github.com/popstas/time-tracker/raw/master/img/screenshot.png?raw=true">https://github.com/popstas/time-tracker/raw/master/img/screenshot.png?raw=true</a>"></p>
 
 <!-- more -->
 
