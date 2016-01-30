@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-01-31T01:56:01+05:00</updated>
+  <updated>2016-01-31T02:21:47+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Проверяем изменения на странице через Cron]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/"/>
+    <updated>2016-01-31T02:00:13+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron</id>
+    <content type="html"><![CDATA[<p>Сегодня хотел заказать ароматизаторов на <a href="http://baker-flavors.blogspot.ru/">Baker Flavours</a>, дошел до страницы заказа,
+и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим количеством заказов, прием заказов временно прекращен.&rdquo;.</p>
+
+<p>Ок, будем ждать, пока эта надпись не пропадет, а чтобы не проверять руками, будем делать это на автомате и ждать уведомления.</p>
+
+<p>Строчка для crontab:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 20 * * * curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { echo "BF order started" | terminal-notifier && open http://bakerflavors.ru/formbf.htm }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Подробности под катом.</p>
+
+<!-- more -->
+
+
+<p>Нужно сделать так, чтобы я узнал о том, что этот текст со страницы пропадет.</p>
+
+<p>Получаем содержимое страницы:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Оказалось, что страница в windows-1251 кодировке и выдает <code>�</code>. Конвертируем:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Проверяем наличие текста:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Когда текст пропадет, grep выдаст ненулевой exitcode. Добавляем действие на этот случай.</p>
+
+<p>В начале я сделал как обычно делаю на сервере: отправил письмо через команду <code>mail</code>. Оказалось, что письмо уходит в спам.
+Не стал с этим разбираться, вместо этого буду показывать notification. Уведомление сделал через
+<a href="https://github.com/julienXX/terminal-notifier">julienXX/terminal-notifier</a> (Mac OS),
+но тут опять вышел облом: уведомление нельзя показывать бесконечно, если я окажусь в это время не перед экраном,
+я об этом не узнаю. Поэтому буду еще и открывать страницу заказа в браузере. В итоге получилось вот это:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { \
+</span><span class='line'>  echo "BF order started" | terminal-notifier && \
+</span><span class='line'>  open http://bakerflavors.ru/formbf.htm \
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[E.ggtimer: таймер в пару кликов в любом браузере]]></title>
