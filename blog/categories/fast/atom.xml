@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[E.ggtimer: таймер в пару кликов в любом браузере]]></title>
-    <link href="http://blog.popstas.ru/blog/2016/01/23/timer-in-browser-with-1-second-time-to-start/"/>
-    <updated>2016-01-23T16:43:24+05:00</updated>
-    <id>http://blog.popstas.ru/blog/2016/01/23/timer-in-browser-with-1-second-time-to-start</id>
+    <link href="http://blog.popstas.ru/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/"/>
+    <updated>2016-01-31T01:43:24+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start</id>
     <content type="html"><![CDATA[<p>Бывает, что надо вспомнить о чем-то в ближайшее время: выключить чайник, выйти к подъезду через 10 минут,
 бросить заниматься фигней через полчаса - для таких вещей идеально подходит таймер. От таймера требуется только одно:
 возможность установить его в течение 5 секунд. Недавно я нашел такой с такими плюсами:</p>
