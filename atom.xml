@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-02-25T23:44:47+05:00</updated>
+  <updated>2016-02-26T21:47:29+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,329 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Docker в картинках]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/02/26/docker-in-images/"/>
+    <updated>2016-02-26T21:29:45+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/02/26/docker-in-images</id>
+    <content type="html"><![CDATA[<p>Оставлю здесь свой пост с хабра.</p>
+
+<p><em>Перевод поста <a href="http://merrigrove.blogspot.co.uk/2015/10/visualizing-docker-containers-and-images.html">Visualizing Docker Containers and Images</a>, от новичка к новичкам, автор на простых примерах объясняет базовые сущности и процессы в использовании docker.</em></p>
+
+<p>Если вы не знаете, что такое Docker или не понимаете, как он соотносится с виртуальными машинами или с инструментами configuration management, то этот пост может показаться немного сложным.</p>
+
+<p>Пост предназначен для тех, кто пытается освоить docker cli, понять, чем отличается контейнер и образ. В частности, будет объяснена разница между просто контейнером и запущенным контейнером.
+<img src="https://habrastorage.org/files/8ff/349/fb2/8ff349fb23f840589c479d029964b8dc.png"></p>
+
+<!-- more -->
+
+
+<p>В процессе освоения нужно представить себе некоторые лежащие в основе детали, например, слои файловой системы UnionFS. В течение последней пары недель я изучал технологию, я новичок в мире docker, и командная строка docker показалась мне довольно сложной для освоения.</p>
+
+<p>По-моему, понимание того, как технология работает изнутри - лучший способ быстро освоить новый инструмент и правильно его использовать. Часто новая технология разрабатывает новые модели абстракций и привносит новые термины и метафоры, которые могут быть как будто бы понятны в начале, но без четкого понимания затрудняют последующее использование инструмента.</p>
+
+<p>Хорошим примером является Git. Я не мог понять Git, пока не понял его базовую модель, включая trees, blobs, commits, tags, tree-ish и прочее. Я думаю, что люди, не понимающие внутренности Git, не могут мастерски использовать этот инструмент.</p>
+
+<h2>Определение образа (Image)</h2>
+
+<p>Визуализация образа представлена ниже в двух видах. Образ можно определить как &ldquo;сущность&rdquo; или &ldquo;общий вид&rdquo; (union view) стека слоев только для чтения.</p>
+
+<p><img src="https://habrastorage.org/files/243/a01/1ed/243a011ed04f455099a4ba64a87736f6.png"></p>
+
+<p>Слева мы видим стек слоев для чтения. Они показаны только для понимания внутреннего устройства, они доступны вне запущенного контейнера на хост-системе. Важно то, что они доступны только для чтения (иммутабельны), а все изменения происходят в верхнем слое стека. Каждый слой может иметь одного родителя, родитель тоже имеет родителя и т.д. Слой верхнего уровня может быть использован как UnionFS (AUFS в моем случае с docker) и представлен в виде единой read-only файловой системы, в которой отражены все слои. Мы видим эту &ldquo;сущность&rdquo; образа на рисунке справа.</p>
+
+<p>Если вы захотите посмотреть на эти слои в первозданном виде, вы можете найти их в файловой системе на хост-машине. Они не видны напрямую из запущенного контейнера. На моей хост-машине я могу найти образы в /var/lib/docker/aufs.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># sudo tree -L 1 /var/lib/docker/
+</span><span class='line'>/var/lib/docker/
+</span><span class='line'>├── aufs
+</span><span class='line'>├── containers
+</span><span class='line'>├── graph
+</span><span class='line'>├── init
+</span><span class='line'>├── linkgraph.db
+</span><span class='line'>├── repositories-aufs
+</span><span class='line'>├── tmp
+</span><span class='line'>├── trust
+</span><span class='line'>└── volumes
+</span><span class='line'>
+</span><span class='line'>7 directories, 2 files</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Определение контейнера (Container)</h2>
+
+<p>Контейнер можно назвать &ldquo;сущностью&rdquo; стека слоев с верхним слоем для записи.</p>
+
+<p><img src="https://habrastorage.org/files/8d3/d29/494/8d3d29494dbf46f79b1be15cea7516c4.png"></p>
+
+<p>На изображении выше показано примерно то же самое, что на изображении про образ, кроме того, что верхний слой доступен для записи. Вы могли заметить, что это определение ничего не говорит о том, запущен контейнер или нет и это неспроста. Разделение контейнеров на запущенные и не запущенные устранило путаницу в моем понимании.</p>
+
+<p>Контейнер определяет лишь слой для записи наверху образа (стека слоев для чтения). Он не запущен.</p>
+
+<h2>Определение запущенного контейнера</h2>
+
+<p>Запущенный контейнер - это &ldquo;общий вид&rdquo; контейнера для чтения-записи и его изолированного пространства процессов. Ниже изображен контейнер в своем пространстве процессов.</p>
+
+<p><img src="https://habrastorage.org/files/c72/5d3/b0b/c725d3b0be5742aca5f50310d640d0b1.png"></p>
+
+<p>Изоляция файловой системы обеспечивается технологиями уровня ядра, cgroups, namespaces и другие, позволяют докеру быть такой перспективной технологией. Процессы в пространстве контейнера могут изменять, удалять или создавать файлы, которые сохраняются в верхнем слое для записи. Смотрите изображение:</p>
+
+<p><img src="https://habrastorage.org/files/f8e/bbf/e3b/f8ebbfe3b59346ee9cdb017b89fcb169.png"></p>
+
+<p>Чтобы проверить это, выполните команду на хост-машине:</p>
+
+<p><source lang="bash">
+docker run ubuntu touch happiness.txt
+</source>
+Вы можете найти новый файл в слое для записи на хост-машине, даже если контейнер не запущен.</p>
+
+<p><source lang="bash"></p>
+
+<h1>find / -name happiness.txt</h1>
+
+<p>/var/lib/docker/aufs/diff/860a7b&hellip;889/happiness.txt
+</source></p>
+
+<h2>Определение слоя образа (Image layer)</h2>
+
+<p>Наконец, мы определим слой образа. Изображение ниже представляет слой образа и дает нам понять, что слой - это не просто изменения в файловой системе.</p>
+
+<p><img src="https://habrastorage.org/files/928/23a/1a0/92823a1a03ad487586293f37e78cf74f.png"></p>
+
+<p>Метаданные - дополнительная информация о слое, которая позволяет докеру сохранять информацию во время выполнения и во время сборки. Оба вида слоев (для чтения и для записи) содержат метаданные.</p>
+
+<p><img src="https://habrastorage.org/files/b7e/d04/252/b7ed042525f647b986009b82d18b3fee.png"></p>
+
+<p>Кроме того, как мы уже упоминали раньше, каждый слой содержит указатель на родителя, используя id (на изображении родительские слои внизу). Если слой не указывает на родительский слой, значит он наверху стека.</p>
+
+<p><img src="https://habrastorage.org/files/7e9/de2/c4f/7e9de2c4f537438c8f5357d09c398289.png"></p>
+
+<h5>Расположение метаданных</h5>
+
+
+<p>На данный момент (я понимаю, что разработчики docker могут позже сменить реализацию), метаданные слоев образов (для чтения) находятся в файле с именем &ldquo;json&rdquo; в папке /var/lib/docker/graph/id_слоя:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/var/lib/docker/graph/e809f156dc985.../json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>где &ldquo;e809f156dc985&hellip;&rdquo; - урезанный id слоя.</p>
+
+<h2>Свяжем все вместе</h2>
+
+<p>Теперь, давайте посмотрим на команды, иллюстрированные понятными картинками.</p>
+
+<h3>docker create <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/71a/d30/a1e/71ad30a1e0b04cb09db3e25c741ef7a8.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/bdc/1cc/f14/bdc1ccf14b1c4702afe71cbd27a1574b.png"></p>
+
+<p>Команда &lsquo;docker create&rsquo; добавляет слой для записи наверх стека слоев, найденного по <image-id>. Команда не запускает контейнер.</p>
+
+<p><img src="https://habrastorage.org/files/12c/8d5/606/12c8d56068c5416e8ca003b532ef3cdb.png"></p>
+
+<h3>docker start <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/bdc/1cc/f14/bdc1ccf14b1c4702afe71cbd27a1574b.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/730/6c4/4cd/7306c44cdfdd4ead9f1f073d91dd312c.png"></p>
+
+<p>Команда &lsquo;docker start&rsquo; создает пространство процессов вокруг слоев контейнера. Может быть только одно пространство процессов на один контейнер.</p>
+
+<h3>docker run <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/71a/d30/a1e/71ad30a1e0b04cb09db3e25c741ef7a8.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/730/6c4/4cd/7306c44cdfdd4ead9f1f073d91dd312c.png"></p>
+
+<p>Один из первых вопросов, который задают люди (я тоже задавал): &ldquo;В чем разница между &lsquo;docker start&rsquo; и &lsquo;docker run&rsquo;?&rdquo; Одна из первоначальных целей этого поста - объяснить эту тонкость.</p>
+
+<p><img src="https://habrastorage.org/files/429/f39/fc6/429f39fc67d44579a40365018dc6839e.png"></p>
+
+<p>Как мы видим, команда &lsquo;docker run&rsquo; находит образ, создает контейнер поверх него и запускает контейнер. Это сделано для удобства и скрывает детали двух команд.</p>
+
+<p>Продолжая сравнение с освоением Git, я скажу, что &lsquo;docker run&rsquo; очень похожа на &lsquo;git pull&rsquo;. Так же, как и &lsquo;git pull&rsquo; (который объединяет &lsquo;git fetch&rsquo; и &lsquo;git merge&rsquo;), команда &lsquo;docker run&rsquo; объединяет две команды, которые могут использоваться и независимо. Это удобно, но поначалу может ввести в заблуждение.</p>
+
+<h3>docker ps</h3>
+
+<p><img src="https://habrastorage.org/files/441/0ed/8b7/4410ed8b7bb94de68dfae60a79a08aca.png"></p>
+
+<p>Команда &lsquo;docker ps&rsquo; выводит список запущенных контейнеров на вашей хост-машине. Важно понимать, что в этот список входят только запущенные контейнеры, не запущенные контейнеры скрыты. Чтобы посмотреть список всех контейнеров, нужно использовать следующую команду.</p>
+
+<h3>docker ps -a</h3>
+
+<p><img src="https://habrastorage.org/files/633/55a/c1a/63355ac1a27d4cf6a1f10142cc89d7b0.png"></p>
+
+<p>Команда &lsquo;docker ps -a&rsquo;, где &lsquo;a&rsquo; - сокращение от &lsquo;all&rsquo; выводит список всех контейнеров, независимо от их состояния.</p>
+
+<h3>docker images</h3>
+
+<p><img src="https://habrastorage.org/files/2d2/29e/bc6/2d229ebc667244b3b478298aa3162c7e.png"></p>
+
+<p>Команда &lsquo;docker images&rsquo; выводит список образов верхнего уровня (top-level images). Фактически, ничего особенного не отличает образ от слоя для чтения. Только те образы, которые имеют присоединенные контейнеры или те, что были получены с помощью pull, считаются образами верхнего уровня. Это различие нужно для удобства, так как за каждым образом верхнего уровня может быть множество слоев.</p>
+
+<h3>docker images -a</h3>
+
+<p><img src="https://habrastorage.org/files/5b6/6a9/fd9/5b66a9fd93ce4157b3cfa48984a5ca0d.png"></p>
+
+<p>Команда &lsquo;docker images -a&rsquo; выводит все образы на хост-машине. Это фактически список всех слоев для чтения в системе. Если вы хотите увидеть все слои одного образа, воспользуйтесь командой &lsquo;docker history&rsquo;.</p>
+
+<h3>docker stop <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/f34/430/e32/f34430e3231842e3b748d337993e9338.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/bdc/1cc/f14/bdc1ccf14b1c4702afe71cbd27a1574b.png"></p>
+
+<p>Команда &lsquo;docker stop&rsquo; посылает сигнал SIGTERM запущенному контейнеру, что мягко останавливает все процессы в пространстве процессов контейнера. В результате мы получаем не запущенный контейнер.</p>
+
+<h3>docker kill <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/ef8/c77/3c3/ef8c773c34454292b76f798482e15463.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/bdc/1cc/f14/bdc1ccf14b1c4702afe71cbd27a1574b.png"></p>
+
+<p>Команда &lsquo;docker kill&rsquo; посылает сигнал SIGKILL, что немедленно завершает все процессы в текущем контейнере. Это почти то же самое, что нажать Ctrl+\ в терминале.</p>
+
+<h3>docker pause <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/63d/de7/ed4/63dde7ed482544e0afcc2925eabc1e3d.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/70d/208/439/70d208439a1944739c5e06e716ab1975.png"></p>
+
+<p>В отличие от &lsquo;docker stop&rsquo; и &lsquo;docker kill&rsquo;, которые посылают настоящие UNIX сигналы процессам контейнера, команда &lsquo;docker pause&rsquo; используют специальную возможность cgroups для заморозки запущенного пространства процессов. Подробности можно прочитать <a href="https://www.kernel.org/doc/Documentation/cgroups/freezer-subsystem.txt">здесь</a>, если вкратце, отправки сигнала Ctrl+Z (SIGTSTP) не достаточно, чтобы заморозить все процессы в пространстве контейнера.</p>
+
+<h3>docker rm <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/92d/14d/d92/92d14dd9224043079a90ab80c4dbc6a6.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/a36/292/8c4/a362928c4661422797d267560ff38182.png"></p>
+
+<p>Команда &lsquo;docker rm&rsquo; удаляет слой для записи, который определяет контейнер на хост-системе. Должна быть запущена на остановленном контейнерах. Удаляет файлы.</p>
+
+<h3>docker rmi <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/4c2/eb5/26a/4c2eb526a35e4751a5302c954370a0fa.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/3a2/145/38a/3a214538a6e54e009f704825109393a1.png"></p>
+
+<p>Команда &lsquo;docker rmi&rsquo; удаляет слой для чтения, который определяет &ldquo;сущность&rdquo; образа. Она удаляет образ с хост-системы, но образ все еще может быть получен из репозитория через &lsquo;docker pull&rsquo;. Вы можете использовать &lsquo;docker rmi&rsquo; только для слоев верхнего уровня (или образов), для удаления промежуточных слоев нужно использовать &lsquo;docker rmi -f&rsquo;.</p>
+
+<h3>docker commit <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/7d0/ec4/104/7d0ec41049b34238bb785e28897e28f0.png"> или <img src="https://habrastorage.org/files/325/e8e/270/325e8e27098e4cdeb956634361879388.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/daa/69c/50f/daa69c50fbc3479ba9d6497983b73a02.png"></p>
+
+<p>Команда &lsquo;docker commit&rsquo; берет верхний уровень контейнера, тот, что для записи и превращает его в слой для чтения. Это фактически превращает контейнер (вне зависимости от того, запущен ли он) в неизменяемый образ.</p>
+
+<p><img src="https://habrastorage.org/files/e3d/7d7/766/e3d7d7766165425a9148ac61369ffe9c.png"></p>
+
+<h3>docker build</h3>
+
+<p>До:
+Dockerfile <img src="https://habrastorage.org/files/847/71b/87a/84771b87a8cd4d77b63d39a3ae9dae13.png"> и <img src="https://habrastorage.org/files/71a/d30/a1e/71ad30a1e0b04cb09db3e25c741ef7a8.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/71a/d30/a1e/71ad30a1e0b04cb09db3e25c741ef7a8.png">
+Со многими другими слоями.</p>
+
+<p>Команда &lsquo;docker build&rsquo; интересна тем, что запускает целый ряд команд:
+<img src="https://habrastorage.org/files/b25/36e/cac/b2536ecac84148ba9a043bb00fe3ce5a.png"></p>
+
+<p>На изображении выше мы видим, как команда build использует значение инструкции FROM из файла Dockerfile как базовый образ после чего:</p>
+
+<p>1) запускает контейнер (create и start)
+2) изменяет слой для записи
+3) делает commit
+На каждой итерации создается новый слой. При исполнении &lsquo;docker build&rsquo; может создаваться множество слоев.</p>
+
+<h3>docker exec <running-container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/7d0/ec4/104/7d0ec41049b34238bb785e28897e28f0.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/4d6/cd5/21e/4d6cd521ee4d47e68d89e9ce77c8a6ca.png"></p>
+
+<p>Команда &lsquo;docker exec&rsquo; применяется к запущенному контейнеру, запускает новый процесс внутри пространства процессов контейнера.</p>
+
+<h3>docker inspect <container-id> | <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/74c/7ee/e53/74c7eee53b8f4ed8a2a606e87571fe3a.png"> или <img src="https://habrastorage.org/files/242/b58/b68/242b58b68acd4580b226569d81d613e5.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/898/5e8/e54/8985e8e5467a42769988a4351d0c0828.png"></p>
+
+<p>Команда &lsquo;docker inspect&rsquo; получает метаданные верхнего слоя контейнера или образа.</p>
+
+<h3>docker save <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/f2a/b8d/70d/f2ab8d70de7a4ca4959f6a7bf1fb11e3.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/d5d/bf7/3f0/d5dbf73f0f2d4d72b0ed38309e2c6a6b.png"></p>
+
+<p>Команда &lsquo;docker save&rsquo; создает один файл, который может быть использован для импорта образа на другую хост-систему. В отличие от команды &lsquo;export&rsquo;, она сохраняет все слои и их метаданные. Может быть применена только к образам.</p>
+
+<h3>docker export <container-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/a7f/3f4/717/a7f3f47170084dc2b75dd73e8d6a5cbb.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/36d/807/ed6/36d807ed6b304333b31f658dfb5c4326.png"></p>
+
+<p>Команда &lsquo;docker export&rsquo; создает tar архив с содержимым файлов контейнера, в результате получается папка, пригодная для использования вне docker. Команда убирает слои и их метаданные. Может быть применена только для контейнеров.</p>
+
+<h3>docker history <image-id></h3>
+
+<p>До:
+<img src="https://habrastorage.org/files/428/150/afc/428150afc2574fd2bf32f1202c908f77.png"></p>
+
+<p>После:
+<img src="https://habrastorage.org/files/e82/45f/511/e8245f51120340b19e07c6009f2d4ce8.png"></p>
+
+<p>Команда &lsquo;docker history&rsquo; принимает <image-id> и рекурсивно выводит список всех слоев-родителей образа (которые тоже могут быть образами)</p>
+
+<h2>Итог</h2>
+
+<p>Я надеюсь, вам понравилась эта визуализация контейнеров и образов. Есть много других команд (pull, search, restart, attach и другие), которые могут или не могут быть объяснены моими сравнениями.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Большой тачпад как замена мышки]]></title>
