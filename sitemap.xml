@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2016/02/27/content-consumption-pyramid-rss/</loc>
+    <lastmod>2016-02-27T14:48:03+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/02/26/docker-in-images/</loc>
     <lastmod>2016-02-26T21:29:45+05:00</lastmod>
   </url>
@@ -110,5 +114,17 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/gadgets/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/pocket/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/twitter/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/rss/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/podcasts/</loc>
   </url>
 </urlset>

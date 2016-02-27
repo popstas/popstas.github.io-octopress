@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Docker | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/docker/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-02-26T21:47:29+05:00</updated>
+  <updated>2016-02-27T17:17:00+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.popstas.ru/blog/2016/02/26/docker-in-images/"/>
     <updated>2016-02-26T21:29:45+05:00</updated>
     <id>http://blog.popstas.ru/blog/2016/02/26/docker-in-images</id>
-    <content type="html"><![CDATA[<p>Оставлю здесь свой пост с хабра.</p>
+    <content type="html"><![CDATA[<p>Оставлю здесь <a href="http://habrahabr.ru/post/272145/">свой пост</a> с хабра.</p>
 
 <p><em>Перевод поста <a href="http://merrigrove.blogspot.co.uk/2015/10/visualizing-docker-containers-and-images.html">Visualizing Docker Containers and Images</a>, от новичка к новичкам, автор на простых примерах объясняет базовые сущности и процессы в использовании docker.</em></p>
 
