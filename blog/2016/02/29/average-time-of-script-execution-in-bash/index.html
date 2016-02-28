@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Проверяем изменения на странице через Cron - Popstas</title>
+  <title>Average: измерение среднего времени выполнения команды в Bash - Popstas</title>
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Сегодня хотел заказать ароматизаторов на Baker Flavours, дошел до страницы заказа,
-и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим &hellip;">
+  <meta name="description" content="Периодически хочется посчитать среднее время, у меня были такие сценарии: простая проверка скорости загрузки страницы
+подбор оптимальных параметров к &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/">
+  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Popstas" type="application/atom+xml">
@@ -81,7 +81,7 @@
   
   <header>
     
-      <h1 class="entry-title">Проверяем изменения на странице через Cron</h1>
+      <h1 class="entry-title">Average: измерение среднего времени выполнения команды в Bash</h1>
     
     
       <p class="meta">
@@ -90,66 +90,125 @@
 
 
 
-<time class='entry-date' datetime='2016-01-31T02:00:13+05:00'><span class='date'>31.01.16</span> <span class='time'>2:00 am</span></time>
+<time class='entry-date' datetime='2016-02-29T03:46:56+05:00'><span class='date'>29.02.16</span> <span class='time'>3:46 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Сегодня хотел заказать ароматизаторов на <a href="http://baker-flavors.blogspot.ru/">Baker Flavours</a>, дошел до страницы заказа,
-и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим количеством заказов, прием заказов временно прекращен.&rdquo;.</p>
+<div class="entry-content"><p>Периодически хочется посчитать среднее время, у меня были такие сценарии:</p>
 
-<p>Ок, будем ждать, пока эта надпись не пропадет, а чтобы не проверять руками, будем делать это на автомате и ждать уведомления.</p>
-
-<p>Строчка для crontab:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>0 20 * * * curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { echo "BF order started" | terminal-notifier && open http://bakerflavors.ru/formbf.htm }</span></code></pre></td></tr></table></div></figure>
+<ul>
+<li>простая проверка скорости загрузки страницы</li>
+<li>подбор оптимальных параметров к команде</li>
+<li>сравнение разных команд</li>
+</ul>
 
 
-<p>Подробности под катом.</p>
+<p>Раньше я просто запускал несколько раз с <code>time</code>, смотрел результат, у уме делил.
+Но мне это надоело, поэтому написал скрипт <code>average</code>.</p>
 
 <!-- more -->
 
 
-<p>Нужно сделать так, чтобы я узнал о том, что этот текст со страницы пропадет.</p>
+<p>Код лежит здесь - <a href="https://gist.github.com/popstas/496053088ea8c292618e">https://gist.github.com/popstas/496053088ea8c292618e</a></p>
 
-<p>Получаем содержимое страницы:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Оказалось, что страница в windows-1251 кодировке и выдает <code>�</code>. Конвертируем:</p>
+<p>Поставить можно так:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s "https://gist.githubusercontent.com/popstas/496053088ea8c292618e/raw/3a5182295d68f8a2b56badbb230f5922ada7a4ff/average.sh" &gt; /usr/local/bin/average
+</span><span class='line'>chmod +x /usr/local/bin/average</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Проверяем наличие текста:</p>
+<p>Использовать можно так:</p>
+
+<p>Запуск команды по умолчанию, 5 циклов:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null </span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>average 'command'</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Когда текст пропадет, grep выдаст ненулевой exitcode. Добавляем действие на этот случай.</p>
+<p>Запуск команды с указанным кол-вом циклов:</p>
 
-<p>В начале я сделал как обычно делаю на сервере: отправил письмо через команду <code>mail</code>. Оказалось, что письмо уходит в спам.
-Не стал с этим разбираться, вместо этого буду показывать notification. Уведомление сделал через
-<a href="https://github.com/julienXX/terminal-notifier">julienXX/terminal-notifier</a> (Mac OS),
-но тут опять вышел облом: уведомление нельзя показывать бесконечно, если я окажусь в это время не перед экраном,
-я об этом не узнаю. Поэтому буду еще и открывать страницу заказа в браузере. В итоге получилось вот это:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>average 10 'command'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Запуск команды с передачей кол-ва циклов через переменную окружения:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export CYCLES=5
+</span><span class='line'>average 'command'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Чтобы не показывать вывод команды, можно обрезать его через tail:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>average 'command' | tail -n1</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Узнать среднее время загрузки страницы:</h3>
+
+<p>С учетом кэша:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>average 'curl -s "http://example.com/" &gt; /dev/null'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>В обход кэша:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>average 'curl -s "http://example.com/?t=$RANDOM" &gt; /dev/null'</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Продвинутое использование</h3>
+
+<p>Мне надо было узнать оптимальное количество параллельных процессов для запуска тестов,
+теперь я могу узнать это запуском одной команды:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail -n1); done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Команда переберет кол-во процессов от 1 до 10, по каждой итерации выведет среднее время.</p>
+
+<p>После запуска получил такие результаты:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { \
-</span><span class='line'>  echo "BF order started" | terminal-notifier && \
-</span><span class='line'>  open http://bakerflavors.ru/formbf.htm \
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail -n1); done
+</span><span class='line'>
+</span><span class='line'>1 - 1 loops, best of 5: 13.9 sec per loop
+</span><span class='line'>2 - 1 loops, best of 5: 7.51 sec per loop
+</span><span class='line'>3 - 1 loops, best of 5: 5.51 sec per loop
+</span><span class='line'>4 - 1 loops, best of 5: 4.51 sec per loop
+</span><span class='line'>5 - 1 loops, best of 5: 4.42 sec per loop
+</span><span class='line'>6 - 1 loops, best of 5: 4.71 sec per loop
+</span><span class='line'>7 - 1 loops, best of 5: 4.21 sec per loop
+</span><span class='line'>8 - 1 loops, best of 5: 4.23 sec per loop
+</span><span class='line'>9 - 1 loops, best of 5: 4.13 sec per loop
+</span><span class='line'>10 - 1 loops, best of 5: 4.33 sec per loop</span></code></pre></td></tr></table></div></figure>
 
+
+<p>Видно, что после 4 потоков разницы почти нет, а вот комп от запуска кучи параллельных процессов тормозит
+очень даже заметно.</p>
+
+<p>Конечно, в этом случае много ума не надо, чтобы понять, что кол-во процессов должно быть по кол-ву ядер, но я что-то засомневался :)</p>
 </div>
 
 
@@ -165,7 +224,7 @@
 
 
 
-<time class='entry-date' datetime='2016-01-31T02:00:13+05:00'><span class='date'>31.01.16</span> <span class='time'>2:00 am</span></time>
+<time class='entry-date' datetime='2016-02-29T03:46:56+05:00'><span class='date'>29.02.16</span> <span class='time'>3:46 am</span></time>
       
 
 <span class="categories">
@@ -188,10 +247,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/" title="Previous Post: E.ggtimer: таймер в пару кликов в любом браузере">&laquo; E.ggtimer: таймер в пару кликов в любом браузере</a>
+        <a class="basic-alignment left" href="/blog/2016/02/27/content-consumption-pyramid-rss/" title="Previous Post: Как я обрабатываю входящие потоки контента через RSS и Pocket или моя воронка статей">&laquo; Как я обрабатываю входящие потоки контента через RSS и Pocket или моя воронка статей</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/" title="Next Post: Большой тачпад как замена мышки">Большой тачпад как замена мышки &raquo;</a>
       
     </p>
   </footer>
@@ -299,8 +356,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/';
-        var disqus_url = 'http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/';
+        var disqus_identifier = 'http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/';
+        var disqus_url = 'http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/';
         var disqus_script = 'embed.js';
       
     (function () {
