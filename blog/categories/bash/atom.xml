@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bash | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/bash/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-02-29T04:06:02+05:00</updated>
+  <updated>2016-02-29T04:19:57+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -33,11 +33,11 @@
 <!-- more -->
 
 
-<p>Код лежит здесь - <a href="https://gist.github.com/popstas/496053088ea8c292618e">https://gist.github.com/popstas/496053088ea8c292618e</a></p>
+<p>Код лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/average">https://github.com/popstas/server-scripts/blob/master/bin/average</a></p>
 
 <p>Поставить можно так:
 <code>
-curl -s "https://gist.githubusercontent.com/popstas/496053088ea8c292618e/raw/3a5182295d68f8a2b56badbb230f5922ada7a4ff/average.sh" &gt; /usr/local/bin/average
+curl -s "https://raw.githubusercontent.com/popstas/server-scripts/master/bin/average" &gt; /usr/local/bin/average
 chmod +x /usr/local/bin/average
 </code></p>
 
