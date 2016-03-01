@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/</loc>
+    <lastmod>2016-03-02T00:49:29+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/</loc>
     <lastmod>2016-02-29T03:46:56+05:00</lastmod>
   </url>
@@ -130,6 +134,18 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/podcasts/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/git/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/gitlab/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/planfix/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/github/</loc>
   </url>
   <url>
     <loc>http://blog.popstas.ru/posts/2/</loc>

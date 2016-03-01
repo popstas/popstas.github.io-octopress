@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Интеграция Git, Gitlab и Planfix почти как на Github - Popstas</title>
+  <meta name="author" content="Stanislav Popov">
+
+  
+  <meta name="description" content="Распробовал тут на неделе интеграцию задач Github и самого Git issue tracker. Ниже будет написано, как настроить в Планфиксе такое поведение: В &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Popstas" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-70438594-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Popstas</a></h1>
+  
+    <h2>Записки о Linux</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.popstas.ru">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Интеграция Git, Gitlab и Planfix почти как на Github</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-02T00:49:29+05:00'><span class='date'>02.03.16</span> <span class='time'>12:49 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Распробовал тут на неделе интеграцию задач Github и самого Git issue tracker.</p>
+
+<p>Ниже будет написано, как настроить в <a href="https://planfix.ru/">Планфиксе</a> такое поведение:</p>
+
+<ul>
+<li>В коммите упоминаем задачу, например, <code>Правки футера шаблона, https://test.planfix.ru/task/123456</code></li>
+<li>После push в удаленный репозиторий в упомянутой задаче появляется комментарий с текстом коммита и ссылкой на страницу коммита на Gitlab, если проект подключен к репозиторию.</li>
+</ul>
+
+
+<p>Tl;dr: настраивается post-receive hook в Git на удаленном сервере, после каждого пуша анализируются сообщения пришедших коммитов, коммиты, содержащие ссылки на задачи отправляются в задачи по email.</p>
+
+<p><img src="/images/2016-03/planfix_logo.png"></p>
+
+<!-- more -->
+
+
+<p>Здесь надо в 2 словах рассказать о нашем workflow:</p>
+
+<ul>
+<li>Компания занимается разработкой и поддержкой около 100 сайтов.</li>
+<li>Каждый сайт использует Git, репозиторий лежит прямо в корне сайта, bare репозитории отсутствуют.</li>
+<li>Часто бывают мелкие правки на разных сайтах.</li>
+<li>90% сайтов на Drupal 7, в котором половина хранится в базе данных.</li>
+<li>Во время правки контент-менеджер или клиент могут пользоваться сайтом и менять на нем данные</li>
+<li>Разработчик выкачивает проект в PhpStorm, настаивает сохранение по Ctrl+S изменений на боевом сайте, таким образом получается, что когда приходит время пушить, на удаленном сервере фактически уже есть все изменения.</li>
+<li>Разработчик также может напрямую править код сайта на удаленном сервере по SFTP, не выкачивая проект, после чего зайти по SSH на удаленный сервер и сделать коммит прямо оттуда.</li>
+<li>Git по сути используется не для доставки изменений на боевой сайт, а для их доставки на компы разработчиков и ведения журнала изменений сайта.</li>
+</ul>
+
+
+<h2>Github issues</h2>
+
+<p>Кто не знает про issues гитхаба, расскажу вкратце о его фишках:</p>
+
+<ul>
+<li>В задачах можно ссылаться на коммиты и другие задачи по номерам, они автоматически становятся ссылками.</li>
+<li>В коммитах можно ссылаться на задачи так же: <code>#123</code>, такой коммит автоматом упоминается в задаче.</li>
+<li>В PhpStorm можно смотреть список открытых issues и создавать из них задачи в IDE, что позволяет автоматом создавать чейнджлист, ветку для выполнения задачи, в коммите сразу будет ссылка на задачу (это все по желанию).</li>
+<li>Можно закрывать задачу прямо из коммита, для этого достаточно упомянуть его рядом с одним из ключевых слов, например, <code>closes #123</code> после пуша в гитхаб закроет указанную задачу.</li>
+</ul>
+
+
+<p>А главное, что все связано и из любого места можно перейти на связанные действия.</p>
+
+<p>Я уже краем уха слышал и видел обо всем этом и видел в чужих репозиториях, но вся картина нарисовалась только после использования. Да и к тому же на гитхабе до этого сталкивался только с pull-request'ами, там немного другое поведение.</p>
+
+<h2>PhpStorm tasks</h2>
+
+<p>В PhpStorm есть интеграция с менеджерами задач, Github там конечно есть, Планфикса там конечно нет, но зато если у менеджера задач есть API, можно интегрировать неподдерживаемый сервис. У Планфикса API есть, но из коробки он не подойдет для этой интеграции, нужно писать свои обертки. В общем-то это дает не много, всего лишь можно будет получать список задач по команде из шторма, и дописывать в коммит ссылку на задачу.</p>
+
+<p>Кстати таски в шторме помогают и без интеграции с трекером: Ctrl+Shift+A - open task, автоматом чистятся все вкладки (создается контекст задачи), создается ветка в гите, changelist, по close task - коммит, я недавно начал пользоваться.</p>
+
+<p>Но гораздо интереснее интеграция в другую сторону: ссылки из задач на коммиты.</p>
+
+<p>Когда я разобрался с тем, как устроена интеграция задач в гитхабе, до меня быстро дошло: просто менеджер задач должен уметь парсить текст коммита, приходящий из гита и делать на основе этого какие-то действия. С этим тоже пока облом: в Планфиксе на данный момент нет обработки писем, прилетающих в задачи, зато <a href="https://planfix.ru/docs/%D0%9A%D0%B0%D0%BA_%D0%BF%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C_%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D1%83_%D0%BF%D0%BE_e-mail%3F">есть обработка писем</a>, приходящих на email юзера, что позволяет надеяться на появление обработки писем, приходящих на email задачи.</p>
+
+<h2>Gitlab</h2>
+
+<p>Самые активные проекты мы дублируем на наш внутренний Gitlab. Использование довольно извращенное, Gitlab сейчас никак не участвует в рабочем процессе, являясь просто зеркалом и веб-интерфейсом для просмотра коммитов.</p>
+
+<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab.</p>
+
+<h2>Git и Planfix</h2>
+
+<p>Никакой готовой интеграции между Git и Планфиксом нет, зато обе системы гибкие и позволяют лепить уникальные решения без больших усилий.</p>
+
+<p>Git поддерживает хуки: скрипты, запускающиеся по определенным событиям.</p>
+
+<p>У каждой задачи в Планфиксе есть свой email адрес, если послать на него письмо, оно придет в задачу в виде комментария, если с email отправителя связан пользователь, то письмо придет как будто от него.</p>
+
+<p>Значит нам нужно отправлять email из Git в Планфикс на адрес задачи.</p>
+
+<h1>Связываем все вместе</h1>
+
+<p>Вся интеграция делается в одном файле, код хука лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/02a2c651e2abc5426fb181be2bfccd53d24198b5/bin/git-hook-post-receive">git-hook-post-receive</a></p>
+
+<p>Чтобы подключить хук, надо положить скрипт в папку <code>.git/hooks/post-receive</code> и сделать его исполняемым, для этого надо выполнить в корне проекта:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s "https://raw.githubusercontent.com/popstas/server-scripts/master/bin/average" &gt; .git/hooks/post-receive
+</span><span class='line'>chmod +x .git/hooks/post-receive</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Так как у нас много проектов, я храню его в отдельной общей папке, а в каждом репозитории создаю символическую ссылку на него.</p>
+
+<p>Хук получает список коммитов, пришедших с последним пушем, находит первую ссылку на задачу Планфикса и отправляет туда письмо.</p>
+
+<h4>О письме</h4>
+
+<ul>
+<li><strong>Отправитель</strong>: email того, кто сделал коммит. По этой причине email в git config и email в профиле юзера Планфикса должны совпадать.</li>
+<li><strong>Получатель</strong>: email задачи Планфикса</li>
+<li><strong>Тема письма</strong>: <code>@commit @nonotify</code>, @nonotify для того, чтобы не уведомлять всех участников задачи о коммите, <code>@commit</code> ничего не значит, может быть потом пригодится для поиска таких комментов, хотя в отчетах текст комментария все равно использовать нельзя.</li>
+<li><strong>Текст письма</strong>: текст коммита. Если репозиторий имеет зеркало на Gitlab, то в конец текста будет добавлена ссылка на коммит.</li>
+</ul>
+
+
+<p>Чтобы хук добавлял ссылку на Gitlab, не придумал ничего лучше, чем добавить remote <code>gitlab</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add gitlab ssh://git@org.ru:10022/sites/test.ru.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>После этого хук будет извлекать из этого адреса URL <a href="http://org.ru/sites/test,">http://org.ru/sites/test,</a> который является главной страницей репозитория. Сайт при всем при этом не имеет доступа к Gitlab, поэтому push и pull в этот remote работать не будут.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Stanislav Popov</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-03-02T00:49:29+05:00'><span class='date'>02.03.16</span> <span class='time'>12:49 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bash/'>bash</a>, <a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/github/'>github</a>, <a class='category' href='/blog/categories/gitlab/'>gitlab</a>, <a class='category' href='/blog/categories/planfix/'>planfix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/02/29/average-time-of-script-execution-in-bash/" title="Previous Post: average: измерение среднего времени выполнения команды в bash">&laquo; average: измерение среднего времени выполнения команды в bash</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/29/average-time-of-script-execution-in-bash/">Average: измерение среднего времени выполнения команды в Bash</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/27/content-consumption-pyramid-rss/">Как я обрабатываю входящие потоки контента через RSS и Pocket или моя воронка статей</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/26/docker-in-images/">Docker в картинках</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Большой тачпад как замена мышки</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="twitterOct">
+  <h1 style="margin-bottom: 0.4em"> Tweets </h1>
+  <a class="twitter-timeline"
+	 data-dnt="true" href="https://twitter.com/popstas" 
+	 data-chrome="noborders transparent"
+     data-widget-id="691684611357806592">
+     
+     Tweets by @popstas
+  </a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/popstas">@popstas</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'popstas',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Stanislav Popov -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'popstas';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/';
+        var disqus_url = 'http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

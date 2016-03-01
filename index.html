@@ -9,8 +9,7 @@
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Периодически хочется посчитать среднее время, у меня были такие сценарии: простая проверка скорости загрузки страницы
-подбор оптимальных параметров к &hellip;">
+  <meta name="description" content="Распробовал тут на неделе интеграцию задач Github и самого Git issue tracker. Ниже будет написано, как настроить в Планфиксе такое поведение: В &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-02T00:49:29+05:00'><span class='date'>02.03.16</span> <span class='time'>12:49 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Распробовал тут на неделе интеграцию задач Github и самого Git issue tracker.</p>
+
+<p>Ниже будет написано, как настроить в <a href="https://planfix.ru/">Планфиксе</a> такое поведение:</p>
+
+<ul>
+<li>В коммите упоминаем задачу, например, <code>Правки футера шаблона, https://test.planfix.ru/task/123456</code></li>
+<li>После push в удаленный репозиторий в упомянутой задаче появляется комментарий с текстом коммита и ссылкой на страницу коммита на Gitlab, если проект подключен к репозиторию.</li>
+</ul>
+
+
+<p>Tl;dr: настраивается post-receive hook в Git на удаленном сервере, после каждого пуша анализируются сообщения пришедших коммитов, коммиты, содержащие ссылки на задачи отправляются в задачи по email.</p>
+
+<p><img src="/images/2016-03/planfix_logo.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/03/02/git-gitlab-planfix-integration/">Читать &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -461,45 +506,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/22/simple-time-tracker/">Простой тайм-трекер для отслеживания потраченного времени</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-22T09:40:45+05:00'><span class='date'>22.11.15</span> <span class='time'>9:40 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>На работе у меня часто бывает такое, что не понятно, куда ушло время.
-Поэтому написал для себя небольшое приложение, тайм-трекер - <a href="http://time.popstas.ru/">http://time.popstas.ru/</a>
-Пользуюсь им уже 2 года, сегодня решил выложить на гитхаб и заодно исправил
-глюки, которые раздражали последние годы :)</p>
-
-<p><img src="https://github.com/popstas/time-tracker/raw/master/img/screenshot.png?raw=true"></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/22/simple-time-tracker/">Читать &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -515,6 +521,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/29/average-time-of-script-execution-in-bash/">Average: измерение среднего времени выполнения команды в Bash</a>
       </li>
     
@@ -528,10 +538,6 @@
     
       <li class="post">
         <a href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Большой тачпад как замена мышки</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/31/check-webpage-changes-with-cron/">Проверяем изменения на странице через Cron</a>
       </li>
     
   </ul>
