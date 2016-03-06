@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Git | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-02T02:49:01+05:00</updated>
+  <updated>2016-03-06T11:07:58+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,191 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/"/>
+    <updated>2016-03-06T10:09:13+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions</id>
+    <content type="html"><![CDATA[<p>С начала января я веду свой <a href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/">проектик</a>, на котором обкатываю новые для меня технологии:</p>
+
+<ul>
+<li>Статический анализ кода, phpcs, phpmd, Scrutinizer</li>
+<li>Автоматическая сборка, Travis CI</li>
+<li>Unit тесты, PHPUnit</li>
+<li>Покрытие кода, Coveralls</li>
+<li>Работу через задачи для любых изменений, Github Issues, PhpStorm tasks</li>
+<li>Документирование всего: README, CHANGELOG, сайт проекта, &ndash;help</li>
+</ul>
+
+
+<p>В этом посте изложена история изменений моего мнения о разных генераторах историй изменения.</p>
+
+<p>Tl;dr: conventional-changelog, стандартизация коммитов.</p>
+
+<p><img src="/images/2016-03/changelog.png"></p>
+
+<!-- more -->
+
+
+<h1>CHANGELOG.md</h1>
+
+<p>Понятная для человека история изменений проекта нужна. Тут надо заметить что такими историями не являются:</p>
+
+<ul>
+<li>Issues проекта, ветка в менеджере задач, доска проекта и т.п.</li>
+<li>git log проекта</li>
+</ul>
+
+
+<p>Файл CHANGELOG.md в корне проекта стал стандартом де-факто для проектов, в котором ведется история изменений, Gitlab даже делает для него отдельную вкладку на странице репозитория.</p>
+
+<p>Про это, конечно, есть <a href="http://keepachangelog.com/">сайт</a>, <a href="https://github.com/olivierlacan/keep-a-changelog">репозиторий на Github</a> с тысячей звезд, проблема явно беспокоит людей.</p>
+
+<p>Про ведение CHANGELOG я задумался, когда изучал проект <a href="https://github.com/hashicorp/otto/">otto</a>, когда писал про него <a href="http://habrahabr.ru/post/273009/">статью на хабр</a>.</p>
+
+<h4>Структура у CHANGELOG более-менее у всех одна и та же:</h4>
+
+<ul>
+<li>Версия и дата релиза</li>
+<li>Сломанные обратные совместимости</li>
+<li>Новые фичи</li>
+<li>Прочие изменения и улучшения</li>
+<li>Исправленные баги</li>
+</ul>
+
+
+<p>Вести такой документ достаточно просто, я за 120 коммитов почти не забывал это делать. В файле нужно всегда держать вверху секцию Next Release с подготовленными заголовками, как-то так:</p>
+
+<pre><code>## Next Release
+
+BREAKING CHANGES:
+
+FEATURES:
+
+IMPROVEMENTS:
+
+BUG FIXES:
+</code></pre>
+
+<p>Перед коммитом я всегда просматриваю дифф, в это время я записываю в коммент к коммиту кратко изменение в первую строку и более подробно в третью, если изменений больше одного, делаю в виде списка. Если про это есть задача, нужно упомянуть ее в виде #123 ссылки, Github умный и такие ссылки делает активными.</p>
+
+<p>Так вот, нужно просто добавить в этот процесс копипасту коммента к коммиту в CHANGELOG, с раскладыванием по категориям изменений.</p>
+
+<p>Во время релиза называем секцию, ставим ей дату, копипастим заголовки.</p>
+
+<p>Процедура очень простая, настолько простая, что хочется ее поручить роботу.</p>
+
+<h2>github_changelog_generator</h2>
+
+<p><a href="https://github.com/skywinder/github-changelog-generator">github_changelog_generator</a> - ruby утилита, которая умеет генерировать CHANGELOG.md из любого репозитория. На выходе получаем документ типа <a href="https://github.com/skywinder/github-changelog-generator/blob/master/CHANGELOG.md">этого</a>, наполненный ссылками на задачи и пулл-реквесты, разбитый по категориям, все круто, как в рекламе. У меня получилось совсем не так красиво.</p>
+
+<p>Что мне не понравилось в этом генераторе:</p>
+
+<ul>
+<li>Текст коммитов никак не учитывает, как и текст задач.</li>
+<li>Чтобы она нормально работала, нужно по полной использовать Github Issues и метки для них, пулл-реквесты, в общем сильно завязано на Github (кто бы мог подумать?), иначе будут генериться просто ссылки на диффы между тегами.</li>
+<li>Нельзя указывать свои секции (например, Breaking changes встроенного нет), но есть <a href="https://github.com/skywinder/github-changelog-generator/issues/316">issue #316</a> про это, судя по активности проекта, они скоро появятся.</li>
+</ul>
+
+
+<p>Что понравилось:</p>
+
+<ul>
+<li>Поведение из коробки что-то генерирует, даже если вы не думали про CHANGELOG.md до этого и не использовали Github фишки, это лучше, чем ничего. Но не намного.</li>
+<li>Можно привязывать свои метки к существующим секциям лога.</li>
+<li>Можно настраивать как параметрами к команде, так и конфигом. При запуске скрипт говорит: <code>Performing task with options</code>, так вот, каждую строку из перечисленного ниже конфига можно вставить в файл <code>.github_changelog_generator</code> и переопределить, заменив <code>_</code> на <code>-</code>.</li>
+<li>Поддерживает сосуществование заполняемой вручную версии (которая все равно лучше автоматической) и генерируемого лога, для этого нужно переложить старый CHANGELOG.md в HISTORY.md (или другой файл, указав его в конфиге).</li>
+</ul>
+
+
+<p>В общем, github_changelog_generator в моем случае подходит хорошо,
+если вся работа ведется на Github, это самый простой способ получить красивый CHANGELOG.md</p>
+
+<p>Но на этом я не успокоился, основная причина в том, что на рабочие проекты на Github я не делаю. Хотелось более общего решения.</p>
+
+<h2>git-extras changelog</h2>
+
+<p><a href="https://github.com/tj/git-extras">tj/git-extras</a> - это <a href="https://github.com/tj/git-extras/blob/master/Commands.md">огромный</a> (около 50) пакет дополнительных команд, упрощающих работу с git. Я его раньше уже видел, но в то время подумал, что мне и встроенных в git команд слишком много. Но в поисках генератора снова набрел на него, у него есть такая команда.</p>
+
+<p>Вот таким нехитрым способом можно в одну команду сгенерировать и запушить лог для проекта, где его не было, но версии помечались тегами и комменты к коммитам были осмысленными:
+<code>
+git changelog -a -p -x &gt; CHANGELOG.md &amp;&amp; git add CHANGELOG.md &amp;&amp; git commit CHANGELOG.md -m "add CHANGELOG.md" &amp;&amp; git push origin master
+</code></p>
+
+<p>Для пробы сделал лог для <a href="https://github.com/popstas/site-setup/blob/5cb4f52bfc5909bac8b8bc77540cf3283b94ff2a/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/009d82420fa4623417cf437b00df36c662c759a2/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/b0b7a5907798ebde714471fbf1611c3232df5925/CHANGELOG.md">drupal-scripts</a>, на этом успокоился, больше в общем и тестить не на чем.</p>
+
+<p>Ниже я отказался от него в пользу <code>conventional changelog</code>.</p>
+
+<h4>Плюсы:</h4>
+
+<ul>
+<li>Простой как дверь, выполняешь команду, получаешь список изменений, разделенных версиями</li>
+</ul>
+
+
+<h4>Минусы:</h4>
+
+<ul>
+<li>Нет почти никаких настроек</li>
+</ul>
+
+
+<h2>rafinskipg/git-changelog</h2>
+
+<p><a href="https://github.com/rafinskipg/git-changelog">rafinskipg/git-changelog</a> - node.js cкрипт, который парсит коммиты, написанные по <a href="https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#">стандартам Angular</a>. Я их прочитал, оказалось, что стандарты годные, к angular никак не привязаны.</p>
+
+<p>Конфликтует с git-extras, так как оба они хотят называться git-changelog. Этот я сделал симлинком <code>git-changelog-angular</code>.</p>
+
+<p>Параметров у скрипта немного, я с ними поигрался, но ничего хорошего у меня с этим тулом не вышло. Идем дальше.</p>
+
+<h2>conventional-changelog</h2>
+
+<p><a href="https://github.com/stevemao/conventional-changelog-cli">stevemao/conventional-changelog-cli</a> - node.js скрипт, также нацелен на стандарты Angular, но, <a href="https://github.com/stevemao/conventional-changelog-cli#why">по заявлениям</a> авторов это как раз то, что нужно:</p>
+
+<ul>
+<li>поддерживает свои форматы коммитов и несколько общих: &lsquo;angular&rsquo;, &lsquo;atom&rsquo;, &lsquo;codemirror&rsquo;, &lsquo;ember&rsquo;, &lsquo;eslint&rsquo;, &lsquo;express&rsquo;, &lsquo;jquery&rsquo;, &lsquo;jscs&rsquo;, &lsquo;jshint&rsquo;</li>
+<li>поддерживает шаблоны</li>
+<li>протестирован, в отличие от github_changelog_generator</li>
+<li>отвязан от Github</li>
+<li>имеет модульную структуру и несколько модулей вокруг себя</li>
+</ul>
+
+
+<p>Воспользовавшись <code>conventional-commits-detector</code>, узнал, что мои комменты к коммитам больше всего похожи на стандарт <code>eslint</code>.</p>
+
+<p>Сгенерированный лог дал понять, что в eslint принято указывать категорию и через двоеточие суть, так коммиты в релизе разбиваются по категориям. Но в целом, конечно, коммиты были названы неправильно и хорошего лога не получилось.</p>
+
+<p>Зато запуск без указания пресета сообщений выдал почти то же, что и <code>git-extras</code>, но вдобавок к этому задал мажорным и минорным версиям разный уровень и указал ссылку на коммит на Github для каждого коммита.</p>
+
+<p>Сгенерировать лог с нуля можно командой:
+<code>
+conventional-changelog -i CHANGELOG.md -s -r 0
+</code></p>
+
+<p>После этого я конечно побежал исправлять логи у проектов, которым сделал логи час назад, вот что вышло: <a href="https://github.com/popstas/site-setup/blob/fd159ed7848aaf8695642bcb53c795922d307dd6/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/ef6138faf0179f31929ff0d90d98466749d4f85b/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/3eb923c09e319a163f9fea9669dfa735b60044c1/CHANGELOG.md">drupal-scripts</a>.</p>
+
+<p>Дальше искать не стал, думаю это оно самое.</p>
+
+<p>Кроме лучшего результата из коробки и полной кастомизации мне в нем понравились модули:</p>
+
+<ul>
+<li><a href="https://github.com/marionebl/conventional-changelog-lint">conventional-changelog-lint</a> - скрипт для pre-commit хука, проверяющий сообщения коммитов на соответствие стандартам, стандарты описываются в файле</li>
+<li><a href="link">conventional-github-releaser</a> - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу</li>
+</ul>
+
+
+<hr />
+
+<h1>Выводы</h1>
+
+<p>Для того, чтобы генератор создавал по-настоящему хорошие логи, важно определиться с форматом сообщений к коммитам, научиться следовать ему и научить роботов понимать наш формат, чтобы роботы <del>поработили людей</del> помогали правильно и не напрягаясь вести историю изменеий проекта в процессе, а не после работы над проектом.</p>
+
+<p>Для себя я нашел инструмент, которым я теперь могу за 5 минут создавать историю изменений для проектов на основе коммитов.</p>
+
+<p>Генерация CHANGELOG.md - шаг в сторону хорошей и актуальной документации по проекту, которая не будет занимать часы или дни, она будет частью рабочего процесса, конечно для маленького проекта из одного программиста это избыточно, мягко говоря, но надо же с чего-то начинать.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Интеграция Git, Gitlab и Planfix почти как на Github]]></title>
@@ -79,7 +264,16 @@
 
 <p>Самые активные проекты мы дублируем на наш внутренний Gitlab. Использование довольно извращенное, Gitlab сейчас никак не участвует в рабочем процессе, являясь просто зеркалом и веб-интерфейсом для просмотра коммитов.</p>
 
-<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab.</p>
+<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab:</p>
+
+<pre><code>#!/bin/bash
+
+remote="$1"
+
+if [ "$remote" != "gitlab" ] &amp;&amp; [ "$(git remote show | grep -c "gitlab")" = 1 ]; then
+        git push gitlab master
+fi
+</code></pre>
 
 <h2>Git и Planfix</h2>
 

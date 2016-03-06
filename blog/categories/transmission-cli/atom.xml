@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Transmission-cli | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/transmission-cli/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2016-03-06T11:07:58+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
+  <author>
+    <name><![CDATA[Stanislav Popov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/"/>
+    <updated>2016-03-06T10:09:13+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions</id>
+    <content type="html"><![CDATA[<p>С начала января я веду свой <a href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/">проектик</a>, на котором обкатываю новые для меня технологии:</p>
+
+<ul>
+<li>Статический анализ кода, phpcs, phpmd, Scrutinizer</li>
+<li>Автоматическая сборка, Travis CI</li>
+<li>Unit тесты, PHPUnit</li>
+<li>Покрытие кода, Coveralls</li>
+<li>Работу через задачи для любых изменений, Github Issues, PhpStorm tasks</li>
+<li>Документирование всего: README, CHANGELOG, сайт проекта, &ndash;help</li>
+</ul>
+
+
+<p>В этом посте изложена история изменений моего мнения о разных генераторах историй изменения.</p>
+
+<p>Tl;dr: conventional-changelog, стандартизация коммитов.</p>
+
+<p><img src="/images/2016-03/changelog.png"></p>
+
+<!-- more -->
+
+
+<h1>CHANGELOG.md</h1>
+
+<p>Понятная для человека история изменений проекта нужна. Тут надо заметить что такими историями не являются:</p>
+
+<ul>
+<li>Issues проекта, ветка в менеджере задач, доска проекта и т.п.</li>
+<li>git log проекта</li>
+</ul>
+
+
+<p>Файл CHANGELOG.md в корне проекта стал стандартом де-факто для проектов, в котором ведется история изменений, Gitlab даже делает для него отдельную вкладку на странице репозитория.</p>
+
+<p>Про это, конечно, есть <a href="http://keepachangelog.com/">сайт</a>, <a href="https://github.com/olivierlacan/keep-a-changelog">репозиторий на Github</a> с тысячей звезд, проблема явно беспокоит людей.</p>
+
+<p>Про ведение CHANGELOG я задумался, когда изучал проект <a href="https://github.com/hashicorp/otto/">otto</a>, когда писал про него <a href="http://habrahabr.ru/post/273009/">статью на хабр</a>.</p>
+
+<h4>Структура у CHANGELOG более-менее у всех одна и та же:</h4>
+
+<ul>
+<li>Версия и дата релиза</li>
+<li>Сломанные обратные совместимости</li>
+<li>Новые фичи</li>
+<li>Прочие изменения и улучшения</li>
+<li>Исправленные баги</li>
+</ul>
+
+
+<p>Вести такой документ достаточно просто, я за 120 коммитов почти не забывал это делать. В файле нужно всегда держать вверху секцию Next Release с подготовленными заголовками, как-то так:</p>
+
+<pre><code>## Next Release
+
+BREAKING CHANGES:
+
+FEATURES:
+
+IMPROVEMENTS:
+
+BUG FIXES:
+</code></pre>
+
+<p>Перед коммитом я всегда просматриваю дифф, в это время я записываю в коммент к коммиту кратко изменение в первую строку и более подробно в третью, если изменений больше одного, делаю в виде списка. Если про это есть задача, нужно упомянуть ее в виде #123 ссылки, Github умный и такие ссылки делает активными.</p>
+
+<p>Так вот, нужно просто добавить в этот процесс копипасту коммента к коммиту в CHANGELOG, с раскладыванием по категориям изменений.</p>
+
+<p>Во время релиза называем секцию, ставим ей дату, копипастим заголовки.</p>
+
+<p>Процедура очень простая, настолько простая, что хочется ее поручить роботу.</p>
+
+<h2>github_changelog_generator</h2>
+
+<p><a href="https://github.com/skywinder/github-changelog-generator">github_changelog_generator</a> - ruby утилита, которая умеет генерировать CHANGELOG.md из любого репозитория. На выходе получаем документ типа <a href="https://github.com/skywinder/github-changelog-generator/blob/master/CHANGELOG.md">этого</a>, наполненный ссылками на задачи и пулл-реквесты, разбитый по категориям, все круто, как в рекламе. У меня получилось совсем не так красиво.</p>
+
+<p>Что мне не понравилось в этом генераторе:</p>
+
+<ul>
+<li>Текст коммитов никак не учитывает, как и текст задач.</li>
+<li>Чтобы она нормально работала, нужно по полной использовать Github Issues и метки для них, пулл-реквесты, в общем сильно завязано на Github (кто бы мог подумать?), иначе будут генериться просто ссылки на диффы между тегами.</li>
+<li>Нельзя указывать свои секции (например, Breaking changes встроенного нет), но есть <a href="https://github.com/skywinder/github-changelog-generator/issues/316">issue #316</a> про это, судя по активности проекта, они скоро появятся.</li>
+</ul>
+
+
+<p>Что понравилось:</p>
+
+<ul>
+<li>Поведение из коробки что-то генерирует, даже если вы не думали про CHANGELOG.md до этого и не использовали Github фишки, это лучше, чем ничего. Но не намного.</li>
+<li>Можно привязывать свои метки к существующим секциям лога.</li>
+<li>Можно настраивать как параметрами к команде, так и конфигом. При запуске скрипт говорит: <code>Performing task with options</code>, так вот, каждую строку из перечисленного ниже конфига можно вставить в файл <code>.github_changelog_generator</code> и переопределить, заменив <code>_</code> на <code>-</code>.</li>
+<li>Поддерживает сосуществование заполняемой вручную версии (которая все равно лучше автоматической) и генерируемого лога, для этого нужно переложить старый CHANGELOG.md в HISTORY.md (или другой файл, указав его в конфиге).</li>
+</ul>
+
+
+<p>В общем, github_changelog_generator в моем случае подходит хорошо,
+если вся работа ведется на Github, это самый простой способ получить красивый CHANGELOG.md</p>
+
+<p>Но на этом я не успокоился, основная причина в том, что на рабочие проекты на Github я не делаю. Хотелось более общего решения.</p>
+
+<h2>git-extras changelog</h2>
+
+<p><a href="https://github.com/tj/git-extras">tj/git-extras</a> - это <a href="https://github.com/tj/git-extras/blob/master/Commands.md">огромный</a> (около 50) пакет дополнительных команд, упрощающих работу с git. Я его раньше уже видел, но в то время подумал, что мне и встроенных в git команд слишком много. Но в поисках генератора снова набрел на него, у него есть такая команда.</p>
+
+<p>Вот таким нехитрым способом можно в одну команду сгенерировать и запушить лог для проекта, где его не было, но версии помечались тегами и комменты к коммитам были осмысленными:
+<code>
+git changelog -a -p -x &gt; CHANGELOG.md &amp;&amp; git add CHANGELOG.md &amp;&amp; git commit CHANGELOG.md -m "add CHANGELOG.md" &amp;&amp; git push origin master
+</code></p>
+
+<p>Для пробы сделал лог для <a href="https://github.com/popstas/site-setup/blob/5cb4f52bfc5909bac8b8bc77540cf3283b94ff2a/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/009d82420fa4623417cf437b00df36c662c759a2/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/b0b7a5907798ebde714471fbf1611c3232df5925/CHANGELOG.md">drupal-scripts</a>, на этом успокоился, больше в общем и тестить не на чем.</p>
+
+<p>Ниже я отказался от него в пользу <code>conventional changelog</code>.</p>
+
+<h4>Плюсы:</h4>
+
+<ul>
+<li>Простой как дверь, выполняешь команду, получаешь список изменений, разделенных версиями</li>
+</ul>
+
+
+<h4>Минусы:</h4>
+
+<ul>
+<li>Нет почти никаких настроек</li>
+</ul>
+
+
+<h2>rafinskipg/git-changelog</h2>
+
+<p><a href="https://github.com/rafinskipg/git-changelog">rafinskipg/git-changelog</a> - node.js cкрипт, который парсит коммиты, написанные по <a href="https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#">стандартам Angular</a>. Я их прочитал, оказалось, что стандарты годные, к angular никак не привязаны.</p>
+
+<p>Конфликтует с git-extras, так как оба они хотят называться git-changelog. Этот я сделал симлинком <code>git-changelog-angular</code>.</p>
+
+<p>Параметров у скрипта немного, я с ними поигрался, но ничего хорошего у меня с этим тулом не вышло. Идем дальше.</p>
+
+<h2>conventional-changelog</h2>
+
+<p><a href="https://github.com/stevemao/conventional-changelog-cli">stevemao/conventional-changelog-cli</a> - node.js скрипт, также нацелен на стандарты Angular, но, <a href="https://github.com/stevemao/conventional-changelog-cli#why">по заявлениям</a> авторов это как раз то, что нужно:</p>
+
+<ul>
+<li>поддерживает свои форматы коммитов и несколько общих: &lsquo;angular&rsquo;, &lsquo;atom&rsquo;, &lsquo;codemirror&rsquo;, &lsquo;ember&rsquo;, &lsquo;eslint&rsquo;, &lsquo;express&rsquo;, &lsquo;jquery&rsquo;, &lsquo;jscs&rsquo;, &lsquo;jshint&rsquo;</li>
+<li>поддерживает шаблоны</li>
+<li>протестирован, в отличие от github_changelog_generator</li>
+<li>отвязан от Github</li>
+<li>имеет модульную структуру и несколько модулей вокруг себя</li>
+</ul>
+
+
+<p>Воспользовавшись <code>conventional-commits-detector</code>, узнал, что мои комменты к коммитам больше всего похожи на стандарт <code>eslint</code>.</p>
+
+<p>Сгенерированный лог дал понять, что в eslint принято указывать категорию и через двоеточие суть, так коммиты в релизе разбиваются по категориям. Но в целом, конечно, коммиты были названы неправильно и хорошего лога не получилось.</p>
+
+<p>Зато запуск без указания пресета сообщений выдал почти то же, что и <code>git-extras</code>, но вдобавок к этому задал мажорным и минорным версиям разный уровень и указал ссылку на коммит на Github для каждого коммита.</p>
+
+<p>Сгенерировать лог с нуля можно командой:
+<code>
+conventional-changelog -i CHANGELOG.md -s -r 0
+</code></p>
+
+<p>После этого я конечно побежал исправлять логи у проектов, которым сделал логи час назад, вот что вышло: <a href="https://github.com/popstas/site-setup/blob/fd159ed7848aaf8695642bcb53c795922d307dd6/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/ef6138faf0179f31929ff0d90d98466749d4f85b/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/3eb923c09e319a163f9fea9669dfa735b60044c1/CHANGELOG.md">drupal-scripts</a>.</p>
+
+<p>Дальше искать не стал, думаю это оно самое.</p>
+
+<p>Кроме лучшего результата из коробки и полной кастомизации мне в нем понравились модули:</p>
+
+<ul>
+<li><a href="https://github.com/marionebl/conventional-changelog-lint">conventional-changelog-lint</a> - скрипт для pre-commit хука, проверяющий сообщения коммитов на соответствие стандартам, стандарты описываются в файле</li>
+<li><a href="link">conventional-github-releaser</a> - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу</li>
+</ul>
+
+
+<hr />
+
+<h1>Выводы</h1>
+
+<p>Для того, чтобы генератор создавал по-настоящему хорошие логи, важно определиться с форматом сообщений к коммитам, научиться следовать ему и научить роботов понимать наш формат, чтобы роботы <del>поработили людей</del> помогали правильно и не напрягаясь вести историю изменеий проекта в процессе, а не после работы над проектом.</p>
+
+<p>Для себя я нашел инструмент, которым я теперь могу за 5 минут создавать историю изменений для проектов на основе коммитов.</p>
+
+<p>Генерация CHANGELOG.md - шаг в сторону хорошей и актуальной документации по проекту, которая не будет занимать часы или дни, она будет частью рабочего процесса, конечно для маленького проекта из одного программиста это избыточно, мягко говоря, но надо же с чего-то начинать.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/"/>
+    <updated>2016-01-17T08:22:25+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg</id>
+    <content type="html"><![CDATA[<p>У моего интернет-провайдера Планета есть бонусная программа поощрения раздачи торрентов с <a href="http://weburg.net">weburg.net</a>, дающая бонусы,
+их можно тратить на абонентскую плату. У меня комп постоянно включен, я сразу стал участвовать.</p>
+
+<p>Поддержку раздач можно разбить на несколько задач:</p>
+
+<ol>
+<li>периодически скачивать новинки фильмов</li>
+<li>скачивать новые серии популярных сериалов</li>
+<li>удалять то, что плохо раздается</li>
+</ol>
+
+
+<p>Через пару месяцев мне это надоело, задумался об автоматизации этого процесса и вот в новогодние каникулы родился
+<a href="https://github.com/popstas/transmission-cli">transmission-cli</a> - консольная утилита, решающая часть этих задач.</p>
+
+<iframe src="https://ghbtns.com/github-btn.html?user=popstas&repo=transmission-cli&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+
+
+<p><a href="https://travis-ci.org/popstas/transmission-cli"><img src="https://travis-ci.org/popstas/transmission-cli.svg?branch=master" alt="Build Status" /></a>
+<a href="https://coveralls.io/github/popstas/transmission-cli?branch=master"><img src="https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&amp;service=github" alt="Coverage Status" /></a></p>
+
+<p><img class="<a" src="href="https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true">https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true</a>"></p>
+
+<!-- more -->
+
+
+<h2>Возможности</h2>
+
+<ul>
+<li>скачивание популярных торрентов с <a href="http://weburg.net">http://weburg.net</a></li>
+<li>удаление дублирующихся раздач (для сериалов)</li>
+<li>отправка метрик в InfluxDB (для слежения за популярностью)</li>
+</ul>
+
+
+<h1>Установка</h1>
+
+<p>Установить клиент можно так:
+<code>bash
+latest_phar=$(curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest | grep 'browser_' | cut -d\" -f4)
+wget -O /usr/local/bin/transmission-cli "$latest_phar"
+chmod +x /usr/local/bin/transmission-cli
+</code></p>
+
+<p>Пользоваться графиками можно с трудом, потому что InfluxDB и Grafana вам придется устанавливать самостоятельно.
+Я ставил то и другое в docker на свою виртуалку и пробрасывал порты на localhost,
+сейчас localhost вшит в <a href="https://github.com/popstas/transmission-cli/blob/master/src/Config.php">конфиг</a>,
+который по сути сейчас находится в коде.</p>
+
+<p>Поставить можно так, заменив папки <code>/Users/popstas/lib/grafana</code> и <code>/var/lib/influxdb</code> на ваши,
+это укажет, где будут храниться данные InfluxDB и Grafana:
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker run -d \ -p 3000:3000 \
+</span><span class='line'>           -v /Users/popstas/lib/grafana:/var/lib/grafana \
+</span><span class='line'>            &ndash;name grafana grafana/grafana&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;docker run -d -p 8083:8083 -p 8086:8086 \
+</span><span class='line'>           -v /var/lib/influxdb:/data \
+</span><span class='line'>           &ndash;name influxdb tutum/influxdb</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Папку от InfluxDB я оставил в виртуалке, т.к. оказалось, что InfluxDB не может работать с папкой, смонтированной в
+VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>Чтобы собиралась статистика, нужно добавить в cron задания, я собираю с 2 компов, поэтому добавляю 2 раза.</p>
+
+<p>Также, чтобы не было конфликтов, статистика не будет отсылаться, если найдет раздачи с одинаковыми названиями,
+которые обычно остаются от сериалов. Поэтому их нужно чистить перед отпправкой статистики.</p>
+
+<p>Раздачи у меня скачиваются в папку, за которой следят оба Transmission, как только туда попадает торрент, раздача
+сразу начинается (можно сделать, чтобы спрашивала разрешение, настраивается в Transmission).</p>
+
+<p>В итоге у меня получился такой cron:
+<code>
+PATH="$PATH:/usr/local/bin"
+59 * * * * transmission-cli remove-duplicates --host=localhost
+59 * * * * transmission-cli remove-duplicates --host=wrtnsq
+0  * * * * transmission-cli send-metrics --host=localhost
+0  * * * * transmission-cli send-metrics --host=wrtnsq
+1  2 * * * transmission-cli download-weburg --dest=/Volumes/media/_planeta/_torrents
+</code></p>
+
+<h2>Результаты статистики</h2>
+
+<p>Никогда не знал о своих раздачах ничего, кроме рейтинга и объема розданного за все время.
+Графики показали интересные вещи (о которых можно было и так догадаться):</p>
+
+<ul>
+<li>с 18 до 22 пик раздач, с 22 до 2 спад, с 2 до 9 все спят</li>
+<li>в праздники и выходные больше качают днем и до ночи, но после 2 все равно все спят</li>
+<li>популярные фильмы популярны обычно не больше недели</li>
+<li>есть популярные фильмы, которые популярны и через несколько месяцев, например &ldquo;Интерстеллар&rdquo;</li>
+</ul>
+
+
+<p>Сейчас я могу выбрать в Grafana период в 7 дней, отсортировать раздачи по розданным Гб и получить список
+раздач-кандидатов на удаление.</p>
+
+<p>Со статистикой еще надо работать, что еще хочется сделать:</p>
+
+<ul>
+<li><p>нормальную группировку по периодам, сейчас группируется только за час или за весь выбранный период,
+нельзя выбрать последнюю неделю и посмотреть посуточные метрики. Я скидываю метрики и сначала не понимал,
+почему так, но тут как раз вышла статья
+<a href="http://habrahabr.ru/post/274303/">Почему расчет перцентилей работает не так как вы ожидаете?</a> и многое мне объяснила.</p></li>
+<li><p>добавить в метрики инфу о весе раздач и вывести эффективность раздач: например, фильм в 1080p весом в 10 Гб
+скачали на 50 Гб за неделю, а 2 Гб фильм низкого качества скачали на 10 Гб, если не учитывать вес раздач, то выходит,
+что первая раздача в 5 раз эффективнее, но если учитвать, то оказвается, что они равны.</p></li>
+</ul>
+
+
+<h2>Техническая часть:</h2>
+
+<ul>
+<li>Symfony console - каркас консольной утилиты</li>
+<li>InfluxDB - хранилище метрик</li>
+<li>Grafana - рисование графиков</li>
+<li>Composer - управление зависимостями</li>
+<li>Box - <a href="http://habrahabr.ru/post/274745/">сборка PHAR</a></li>
+<li>PHPCS, PHPMD - линтеры PHP</li>
+<li>Travis CI - публицация PHAR на Github</li>
+<li>Coveralls - сервис слежения за покрытием кода тестами</li>
+</ul>
+
+
+<p>Половину из этого я ни разу не использовал, вторую половину - немного. Поэтому граблей хватает.</p>
+
+<h3>Symfony console</h3>
+
+<p>Тут мне сказать особо нечего, фреймворки я только начинаю осваивать, пока ничего не понятно с Dependency Injection,
+чувствую, что у меня переменные в функции местами прокидываются криво, а местами не прокидываются, где стоило бы.</p>
+
+<p>Не понятно, как тестить через PHPUnit, как мокать объекты.</p>
+
+<p>Пока радуюсь, что освоился с namespaces и использовал на практике PSR-2 и PSR-4.</p>
+
+<p>Почти все идеи взяты из исходников
+<a href="https://github.com/composer/composer">composer</a> и
+<a href="https://github.com/MartialGeek/transmission-api">transmission-api</a></p>
+
+<h3>InfluxDB</h3>
+
+<p>InfluxDB не может работать с папкой, смонтированной в VirtualBox из Mac OS (какой-то старый глюк docker).</p>
+
+<p>InfluxDB я раньше не видел, хотел посмотреть ее как замену для хранилища Whisper из стека
+Diamond -> Carbon -> Whisper -> Graphite -> Grafana для рисования графиков сервера.</p>
+
+<p>Компания, стоящая за InfluxDB с недавнего времени назвается InfluxData и предлагает свой стек
+<a href="https://influxdata.com/time-series-platform/">TICK</a>, в который
+входит еще и алертинг по отклонениям метрик. Могу сказать о нем то, что Telegraf работает, InfluxDB работает без тормозов,
+собирая с моего компа метрики раз в 10 секунд, Chronograf какой-то неполноценный, по сравнению с Grafana,
+а Kapacitor я еще не смотрел.</p>
+
+<h3>Grafana</h3>
+
+<p>В Grafana 2.6 появилось много нового, по сравнению с 2.0, которую я видел в августе. А вообще, если кто использовал
+Cacti или Graphite и не видел Grafana, посмотрите, красота неописуемая.</p>
+
+<h3>Composer</h3>
+
+<p>Некоторые dev-пакеты (phpunit) потребовали php 5.6 для запуска, поэтому поставил 5.6 минимальной необходимой версией,
+хотя по факту клиент может работать и на 5.5, а на 5.4 уже не может.</p>
+
+<h3>Box</h3>
+
+<p>Если собирать PHAR, используя box, установленный через composer, в архив попадает много ненужных dev-пакетов.
+Сначала я пытался бороться с этим исключением пакетов через box.json, потом понял, что это бесполезно
+(все пакеты не исключишь, а однажды исключишь нужный), в итоге пришел к такой схеме:</p>
+
+<ul>
+<li>ставим пакеты через <code>composer install --no-dev</code></li>
+<li>качаем box.phar</li>
+<li>собираем transmission-cli.phar</li>
+<li>доставляем пакеты через composer update</li>
+</ul>
+
+
+<p>Это в 3 раза уменьшило вес собранного архива.</p>
+
+<h3>PHPCS, PHPMD</h3>
+
+<p>PHP Code Sniffer умеет анализировать ваш код на соответствие определенным стандартам, в моем случае PSR-2,
+ставится через Composer, используется так:
+<code>
+./vendor/bin/phpcs --standard=psr2 ./src
+</code></p>
+
+<p>А PHP Mess Detector у меня не запустился.</p>
+
+<h3>Travis CI</h3>
+
+<p>Впервые удалось использовать его по назначению. Как-то пробовал использовать его для тестов пакета bash скриптов
+<a href="https://github.com/popstas/drupal-scripts">drupal-scripts</a>, но быстро сдался, т.к. в окружении travis они вели себя не так,
+как на локалке (в итоге перекинул тесты на TeamCity).</p>
+
+<p>На этом проекте travis прогоняет тесты phpunit
+(тестов по сути еще нет, но без phpunit в каком-либо виде travis по умолчанию фейлит сборку)
+и если к коммиту был проставлен git tag,
+публикует PHAR как приложение к релизу на Github, чуть подробнее я написал
+в <a href="http://habrahabr.ru/post/274745/#comment_8736379">этом комменте</a>.</p>
+
+<h3>Coveralls</h3>
+
+<p>До покрытия тестами я еще не добирался, я тесты-то еще только начинаю использовать, решил попробовать на этом проекте.</p>
+
+<p>Чтобы добавить coveralls в самом простом случае (в доках есть и сложные), достаточно сделать так, чтобы PHPUnit
+генерил файл <code>build/logs/clover.xml</code>, для этого надо добавить строчку в phpunit.xml, в секцию logging:
+<code>xml
+&lt;logging&gt;
+    &lt;log type="coverage-clover" target="build/logs/clover.xml"/&gt;
+&lt;/logging&gt;
+</code>
+Ну и конечно зарегаться на <a href="https://coveralls.io/">https://coveralls.io/</a> и активировать там проект.
+Если путь будет другой, придется читать доки и создавать файл настройки .coveralls.yml</p>
+
+<p>В результате я имею красивую красную ачивку на странице проекта
+и <a href="https://coveralls.io/github/popstas/transmission-cli">историю деградации покрытия</a> :)</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Planfix | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/planfix/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-02T02:49:01+05:00</updated>
+  <updated>2016-03-06T11:07:58+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -79,7 +79,16 @@
 
 <p>Самые активные проекты мы дублируем на наш внутренний Gitlab. Использование довольно извращенное, Gitlab сейчас никак не участвует в рабочем процессе, являясь просто зеркалом и веб-интерфейсом для просмотра коммитов.</p>
 
-<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab.</p>
+<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab:</p>
+
+<pre><code>#!/bin/bash
+
+remote="$1"
+
+if [ "$remote" != "gitlab" ] &amp;&amp; [ "$(git remote show | grep -c "gitlab")" = 1 ]; then
+        git push gitlab master
+fi
+</code></pre>
 
 <h2>Git и Planfix</h2>
 

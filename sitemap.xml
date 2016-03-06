@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/</loc>
+    <lastmod>2016-03-06T10:09:13+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/</loc>
     <lastmod>2016-03-02T00:49:29+05:00</lastmod>
   </url>
@@ -79,6 +83,9 @@
     <loc>http://blog.popstas.ru/blog/categories/fast/</loc>
   </url>
   <url>
+    <loc>http://blog.popstas.ru/blog/categories/transmission-cli/</loc>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/categories/php/</loc>
   </url>
   <url>
@@ -148,6 +155,9 @@
     <loc>http://blog.popstas.ru/blog/categories/github/</loc>
   </url>
   <url>
-    <loc>http://blog.popstas.ru/posts/2/</loc>
+    <loc>http://blog.popstas.ru/blog/categories/changelog/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/docs/</loc>
   </url>
 </urlset>

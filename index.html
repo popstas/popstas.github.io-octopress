@@ -9,7 +9,7 @@
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Распробовал тут на неделе интеграцию задач Github и самого Git issue tracker. Ниже будет написано, как настроить в Планфиксе такое поведение: В &hellip;">
+  <meta name="description" content="С начала января я веду свой проектик, на котором обкатываю новые для меня технологии: Статический анализ кода, phpcs, phpmd, Scrutinizer &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-06T10:09:13+05:00'><span class='date'>06.03.16</span> <span class='time'>10:09 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>С начала января я веду свой <a href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/">проектик</a>, на котором обкатываю новые для меня технологии:</p>
+
+<ul>
+<li>Статический анализ кода, phpcs, phpmd, Scrutinizer</li>
+<li>Автоматическая сборка, Travis CI</li>
+<li>Unit тесты, PHPUnit</li>
+<li>Покрытие кода, Coveralls</li>
+<li>Работу через задачи для любых изменений, Github Issues, PhpStorm tasks</li>
+<li>Документирование всего: README, CHANGELOG, сайт проекта, &ndash;help</li>
+</ul>
+
+
+<p>В этом посте изложена история изменений моего мнения о разных генераторах историй изменения.</p>
+
+<p>Tl;dr: conventional-changelog, стандартизация коммитов.</p>
+
+<p><img src="/images/2016-03/changelog.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">Читать &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -466,46 +516,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/10/interactive-bash-history-with-search/">Интерактивная Zsh History с поиском и скроллом, Percol</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-10T19:55:20+05:00'><span class='date'>10.12.15</span> <span class='time'>7:55 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Если кто не знает, в bash/zsh есть поиск по истории комманд, если нажать <code>Ctrl+R</code> и начать набирать
-команду, отобразится последняя команда из истории, для навигации можно использовать
-<code>Ctrl+R</code>, <code>Ctrl+Shift+R</code>. При этом видно одновременно видно только одну команду из истории.</p>
-
-<p>Утилита <a href="https://github.com/mooz/percol#zsh-history-search">percol</a> решает эту проблему.</p>
-
-<p><img src="/images/2015-12/percol.gif"></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/10/interactive-bash-history-with-search/">Читать &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -521,6 +531,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
       </li>
     
@@ -534,10 +548,6 @@
     
       <li class="post">
         <a href="/blog/2016/02/26/docker-in-images/">Docker в картинках</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Большой тачпад как замена мышки</a>
       </li>
     
   </ul>

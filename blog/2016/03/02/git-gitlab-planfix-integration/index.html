@@ -157,7 +157,23 @@
 
 <p>Самые активные проекты мы дублируем на наш внутренний Gitlab. Использование довольно извращенное, Gitlab сейчас никак не участвует в рабочем процессе, являясь просто зеркалом и веб-интерфейсом для просмотра коммитов.</p>
 
-<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab.</p>
+<p>На машине разработчика настраивается <code>pre-push</code> хук, который пушит также в Gitlab:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/bash
+</span><span class='line'>
+</span><span class='line'>remote="$1"
+</span><span class='line'>
+</span><span class='line'>if [ "$remote" != "gitlab" ] && [ "$(git remote show | grep -c "gitlab")" = 1 ]; then
+</span><span class='line'>        git push gitlab master
+</span><span class='line'>fi</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Git и Planfix</h2>
 
@@ -243,6 +259,8 @@
         <a class="basic-alignment left" href="/blog/2016/02/29/average-time-of-script-execution-in-bash/" title="Previous Post: average: измерение среднего времени выполнения команды в bash">&laquo; average: измерение среднего времени выполнения команды в bash</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/" title="Next Post: CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -262,6 +280,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
       </li>
     
@@ -275,10 +297,6 @@
     
       <li class="post">
         <a href="/blog/2016/02/26/docker-in-images/">Docker в картинках</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Большой тачпад как замена мышки</a>
       </li>
     
   </ul>
