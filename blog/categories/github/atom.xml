@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Github | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-06T11:07:58+05:00</updated>
+  <updated>2016-03-07T14:48:46+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -182,7 +182,7 @@ conventional-changelog -i CHANGELOG.md -s -r 0
 
 <ul>
 <li><a href="https://github.com/marionebl/conventional-changelog-lint">conventional-changelog-lint</a> - скрипт для pre-commit хука, проверяющий сообщения коммитов на соответствие стандартам, стандарты описываются в файле</li>
-<li><a href="link">conventional-github-releaser</a> - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу</li>
+<li><a href="https://github.com/stevemao/conventional-github-releaser">conventional-github-releaser</a> - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу</li>
 </ul>
 
 
