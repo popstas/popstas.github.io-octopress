@@ -146,8 +146,9 @@ conventional-changelog -i CHANGELOG.md -s -r 0
 
 Кроме лучшего результата из коробки и полной кастомизации мне в нем понравились модули:
 
+- [angular-precommit](https://github.com/ajoslin/angular-precommit) - готовый валидатор сообщений к коммитам
 - [conventional-changelog-lint](https://github.com/marionebl/conventional-changelog-lint) - скрипт для pre-commit хука, проверяющий сообщения коммитов на соответствие стандартам, стандарты описываются в файле
-- [conventional-github-releaser](link) - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу
+- [conventional-github-releaser](https://github.com/stevemao/conventional-github-releaser) - автоматическое создание релизов на Github. У меня они уже создаются, но приходится вручную заходить туда и править сообщение к релизу
 
 ---
 
@@ -157,3 +158,32 @@ conventional-changelog -i CHANGELOG.md -s -r 0
 Для себя я нашел инструмент, которым я теперь могу за 5 минут создавать историю изменений для проектов на основе коммитов.
 
 Генерация CHANGELOG.md - шаг в сторону хорошей и актуальной документации по проекту, которая не будет занимать часы или дни, она будет частью рабочего процесса, конечно для маленького проекта из одного программиста это избыточно, мягко говоря, но надо же с чего-то начинать.
+
+## UPD 08.03.2016
+Добавил валидатор:
+```
+npm install -g conventional-changelog-lint
+echo 'conventional-changelog-lint -e' > .git/hooks/commit-msg
+chmod +x .git/hooks/commit-msg
+```
+После этого коммиты с неправильными сообщениями перестанут проходить.
+
+Перед релизом генерирую CHANGELOG.md:
+```
+conventional-changelog -p angular -i CHANGELOG.md -s 
+```
+Это допишет в лог содержимое коммитов с последнего релиза (semver тега). После этого остается поправить руками то, что не нравится, проставить версию.
+
+После этого я генерирую документацию специфичной для проекта командой, коммит, тег, пуш:
+```
+git add .
+git commit -m 'docs: v0.6.0'
+git push --follow-tags
+```
+
+После этого релиз. Релиз будем делать через `conventional-github-releaser`:
+```
+npm install -g conventional-github-releaser
+CONVENTIONAL_GITHUB_RELEASER_TOKEN=your_public_repo_token conventional-github-releaser -p angular
+```
+Еще не разобрался с тем, как это скрестить с выкладкой PHAR архива с Travis: для `github-releaser` нужно, чтобы релиза еще не было, но он создается автоматически при пуше тега на Github. После удаления релиза (превращения в Draft), github-releaser отработал, вставил данные CHANGELOG в релиз, все как надо.
