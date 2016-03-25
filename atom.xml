@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-07T20:48:16+05:00</updated>
+  <updated>2016-03-25T23:16:32+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -207,6 +207,48 @@
 <p>Для себя я нашел инструмент, которым я теперь могу за 5 минут создавать историю изменений для проектов на основе коммитов.</p>
 
 <p>Генерация CHANGELOG.md - шаг в сторону хорошей и актуальной документации по проекту, которая не будет занимать часы или дни, она будет частью рабочего процесса, конечно для маленького проекта из одного программиста это избыточно, мягко говоря, но надо же с чего-то начинать.</p>
+
+<h2>UPD 08.03.2016</h2>
+
+<p>Добавил валидатор:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g conventional-changelog-lint
+</span><span class='line'>echo 'conventional-changelog-lint -e' &gt; .git/hooks/commit-msg
+</span><span class='line'>chmod +x .git/hooks/commit-msg</span></code></pre></td></tr></table></div></figure>
+
+
+<p>После этого коммиты с неправильными сообщениями перестанут проходить.</p>
+
+<p>Перед релизом генерирую CHANGELOG.md:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>conventional-changelog -p angular -i CHANGELOG.md -s </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Это допишет в лог содержимое коммитов с последнего релиза (semver тега). После этого остается поправить руками то, что не нравится, проставить версию.</p>
+
+<p>После этого я генерирую документацию специфичной для проекта командой, коммит, тег, пуш:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git add .
+</span><span class='line'>git commit -m 'docs: v0.6.0'
+</span><span class='line'>git push --follow-tags</span></code></pre></td></tr></table></div></figure>
+
+
+<p>После этого релиз. Релиз будем делать через <code>conventional-github-releaser</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g conventional-github-releaser
+</span><span class='line'>CONVENTIONAL_GITHUB_RELEASER_TOKEN=your_public_repo_token conventional-github-releaser -p angular</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Еще не разобрался с тем, как это скрестить с выкладкой PHAR архива с Travis: для <code>github-releaser</code> нужно, чтобы релиза еще не было, но он создается автоматически при пуше тега на Github. После удаления релиза (превращения в Draft), github-releaser отработал, вставил данные CHANGELOG в релиз, все как надо.</p>
 ]]></content>
   </entry>
   
@@ -226,6 +268,8 @@
 
 
 <p>Tl;dr: настраивается post-receive hook в Git на удаленном сервере, после каждого пуша анализируются сообщения пришедших коммитов, коммиты, содержащие ссылки на задачи отправляются в задачи по email.</p>
+
+<p>Вся интеграция делается в одном файле, код хука лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/git-hook-post-receive">git-hook-post-receive</a></p>
 
 <p><img src="http://blog.popstas.ru/images/2016-03/planfix_logo.png"></p>
 
@@ -306,7 +350,7 @@
 
 <h1>Связываем все вместе</h1>
 
-<p>Вся интеграция делается в одном файле, код хука лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/02a2c651e2abc5426fb181be2bfccd53d24198b5/bin/git-hook-post-receive">git-hook-post-receive</a></p>
+<p>Вся интеграция делается в одном файле, код хука лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/git-hook-post-receive">git-hook-post-receive</a></p>
 
 <p>Чтобы подключить хук, надо положить скрипт в папку <code>.git/hooks/post-receive</code> и сделать его исполняемым, для этого надо выполнить в корне проекта:</p>
 

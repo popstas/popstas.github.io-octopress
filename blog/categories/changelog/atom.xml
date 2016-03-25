@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Changelog | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/changelog/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-07T20:48:16+05:00</updated>
+  <updated>2016-03-25T23:16:32+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -196,6 +196,36 @@ conventional-changelog -i CHANGELOG.md -s -r 0
 <p>Для себя я нашел инструмент, которым я теперь могу за 5 минут создавать историю изменений для проектов на основе коммитов.</p>
 
 <p>Генерация CHANGELOG.md - шаг в сторону хорошей и актуальной документации по проекту, которая не будет занимать часы или дни, она будет частью рабочего процесса, конечно для маленького проекта из одного программиста это избыточно, мягко говоря, но надо же с чего-то начинать.</p>
+
+<h2>UPD 08.03.2016</h2>
+
+<p>Добавил валидатор:
+<code>
+npm install -g conventional-changelog-lint
+echo 'conventional-changelog-lint -e' &gt; .git/hooks/commit-msg
+chmod +x .git/hooks/commit-msg
+</code>
+После этого коммиты с неправильными сообщениями перестанут проходить.</p>
+
+<p>Перед релизом генерирую CHANGELOG.md:
+<code>
+conventional-changelog -p angular -i CHANGELOG.md -s
+</code>
+Это допишет в лог содержимое коммитов с последнего релиза (semver тега). После этого остается поправить руками то, что не нравится, проставить версию.</p>
+
+<p>После этого я генерирую документацию специфичной для проекта командой, коммит, тег, пуш:
+<code>
+git add .
+git commit -m 'docs: v0.6.0'
+git push --follow-tags
+</code></p>
+
+<p>После этого релиз. Релиз будем делать через <code>conventional-github-releaser</code>:
+<code>
+npm install -g conventional-github-releaser
+CONVENTIONAL_GITHUB_RELEASER_TOKEN=your_public_repo_token conventional-github-releaser -p angular
+</code>
+Еще не разобрался с тем, как это скрестить с выкладкой PHAR архива с Travis: для <code>github-releaser</code> нужно, чтобы релиза еще не было, но он создается автоматически при пуше тега на Github. После удаления релиза (превращения в Draft), github-releaser отработал, вставил данные CHANGELOG в релиз, все как надо.</p>
 ]]></content>
   </entry>
   
