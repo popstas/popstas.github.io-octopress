@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-26T03:44:39+05:00</updated>
+  <updated>2016-03-27T10:54:24+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -1187,7 +1187,7 @@ Dockerfile <img src="https://habrastorage.org/files/847/71b/87a/84771b87a8cd4d77
 <p><a href="https://travis-ci.org/popstas/transmission-cli"><img src="https://travis-ci.org/popstas/transmission-cli.svg?branch=master" alt="Build Status" /></a>
 <a href="https://coveralls.io/github/popstas/transmission-cli?branch=master"><img src="https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&amp;service=github" alt="Coverage Status" /></a></p>
 
-<p><img src="https://github.com/popstas/transmission-cli/raw/master/doc/img/grafana.png?raw=true"></p>
+<p><img src="https://github.com/popstas/transmission-cli/raw/master/docs/img/grafana.png?raw=true"></p>
 
 <!-- more -->
 
