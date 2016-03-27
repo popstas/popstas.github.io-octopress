@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ubuntu | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/ubuntu/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-26T03:08:29+05:00</updated>
+  <updated>2016-03-26T03:44:39+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -41,14 +41,15 @@
 </ul>
 
 
-<p>Для манипуляции с окнами из консоли использовал <code>xdotool</code>:
-<code>bash
-sudo aptitude install xdotool
-</code></p>
+<p>Для манипуляции с окнами из консоли использовал <code>xdotool</code>:</p>
+
+<pre><code>sudo aptitude install xdotool
+</code></pre>
 
 <p>Через полчаса родился страшный однострочник, в итоге из него получился такой скрипт:</p>
 
-<pre><code class="bash windows-activate https://gist.github.com/popstas/9e1641e39abbda6392f1">#!/bin/bash
+<pre><code>
+# !/bin/bash
 # 
 # Activate all windows with process name of currently active window
 
