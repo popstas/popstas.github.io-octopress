@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Phpstorm | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/phpstorm/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-27T11:15:43+05:00</updated>
+  <updated>2016-04-07T00:48:07+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -21,6 +21,9 @@
     <content type="html"><![CDATA[<p>Надоело постоянно обновлять PhpStorm руками. На Ubuntu последнее время делал это с помощью ansible,
 под Mac этот плейбук не расчитан, к тому же версию ему надо было указвать вручную.
 Поэтому написал скрипт, не совместимый с Ubuntu :)</p>
+
+<p>UPD: 06.06.2016
+Сегодня вышла EAP 2016.1.1, так вот, теперь app ставится не в PhpStormEAP, как раньше, а с версией, поэтому мой скрипт перестал работать.</p>
 
 <p><img class="<a" src="href="http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png">http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png</a>"></p>
 

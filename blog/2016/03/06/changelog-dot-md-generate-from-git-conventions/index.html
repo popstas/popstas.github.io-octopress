@@ -265,6 +265,26 @@
 
 <p>После этого я конечно побежал исправлять логи у проектов, которым сделал логи час назад, вот что вышло: <a href="https://github.com/popstas/site-setup/blob/fd159ed7848aaf8695642bcb53c795922d307dd6/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/ef6138faf0179f31929ff0d90d98466749d4f85b/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/3eb923c09e319a163f9fea9669dfa735b60044c1/CHANGELOG.md">drupal-scripts</a>.</p>
 
+<p>Для проектов на своем Gitlab все сложнее: чтобы правильно делались ссылки на коммиты, нужно, во-первых, указать адрес проекта через файл package.json:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "myproject",
+</span><span class='line'>  "repository": {
+</span><span class='line'>    "type": "git",
+</span><span class='line'>    "url": "http://my.gitlab.ru/projects/myproject.git"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>А во-вторых не знаю, что надо сделать, он генерит ссылки с сокращенными хэшами, которые Github понимает, а Gitlab открывает страницу списка коммитов, т.к. ему нужен полный хэш, шаблон сходу не нашел.</p>
+
 <p>Дальше искать не стал, думаю это оно самое.</p>
 
 <p>Кроме лучшего результата из коробки и полной кастомизации мне в нем понравились модули:</p>
@@ -303,7 +323,7 @@
 <p>Перед релизом генерирую CHANGELOG.md:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>conventional-changelog -p angular -i CHANGELOG.md -s </span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>conventional-changelog -p angular -i CHANGELOG.md -s</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Это допишет в лог содержимое коммитов с последнего релиза (semver тега). После этого остается поправить руками то, что не нравится, проставить версию.</p>
@@ -387,6 +407,8 @@
         <a class="basic-alignment left" href="/blog/2016/03/02/git-gitlab-planfix-integration/" title="Previous Post: Интеграция Git, Gitlab и Planfix почти как на Github">&laquo; Интеграция Git, Gitlab и Planfix почти как на Github</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/" title="Next Post: Windows со встроенной Ubuntu и bash через программу Microsoft Insider Preview еще недоступна">Windows со встроенной Ubuntu и bash через программу Microsoft Insider Preview еще недоступна &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -406,6 +428,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/">Windows со встроенной Ubuntu и Bash через программу Microsoft Insider Preview еще недоступна</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a>
       </li>
     
@@ -419,10 +445,6 @@
     
       <li class="post">
         <a href="/blog/2016/02/27/content-consumption-pyramid-rss/">Как я обрабатываю входящие потоки контента через RSS и Pocket или моя воронка статей</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/02/26/docker-in-images/">Docker в картинках</a>
       </li>
     
   </ul>

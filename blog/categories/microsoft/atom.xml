@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Microsoft | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/microsoft/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2016-04-07T00:48:07+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
+  <author>
+    <name><![CDATA[Stanislav Popov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Windows со встроенной Ubuntu и Bash через программу Microsoft Insider Preview еще недоступна]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/"/>
+    <updated>2016-04-07T00:26:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available</id>
+    <content type="html"><![CDATA[<p>Все конечно слышали, что Microsoft и Canonical сговорились и встроили в винду линукс. Так вот, его пока еще нельзя потрогать. <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">Пруф</a>.</p>
+
+<!-- more -->
+
+
+<p>Вчера утром пришло письмо от Microsoft:</p>
+
+<blockquote><p>Только что закончилась ежегодная конференция разработчиков Build 2016, на которой мы представили новые функции Windows 10.
+Вы сможете в числе первых опробовать эти новые функции, выбрав &ldquo;быстрый&rdquo; или &ldquo;медленный&rdquo; круг обновлений. Подробную информацию о новых возможностях читайте в записи блога Гейба о последней сборке Windows 10 Insider Preview. Обратите внимание, что для участников программы предварительной оценки, которые хотят выполнить чистую установку этой сборки или запустить ее в виртуальной машине, доступны ISO-образы. (на английском языке.)</p></blockquote>
+
+<p>Я конечно пришел домой вечером, скачал ISO, поставил на Virtualbox, сегодня на обеде думал: &ldquo;Приду домой, посмотрю, что там за линукс&rdquo;. Удивлялся, что до сих пор не гуглятся обзоры фичи.</p>
+
+<p>Включил виртуалку, x64, English, что дальше делать - не понятно. Нагуглил официальные страницы фичи:</p>
+
+<ul>
+<li><a href="https://blogs.windows.com/windowsexperience/2016/04/06/announcing-windows-10-insider-preview-build-14316/">Анонс билда</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/commandline/wsl/about">Видео с конференции BUILD</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation">Github</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation/blob/master/commandline/WSL/install_guide.md">Инструкция по включению фичи</a></li>
+</ul>
+
+
+<p>Чтобы обновление пришло, нужно в настройках центра обновлений включить режим разработчика, переключиться на Insider level: fast, обновиться минимум до build 14316</p>
+
+<p>Все стало понятно из этого <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">issue</a>, кто-то, включая меня, застрял на сборке 14295.</p>
+
+<p>Ждем.</p>
+]]></content>
+  </entry>
+  
+</feed>

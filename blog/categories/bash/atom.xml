@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bash | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/bash/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-27T11:15:43+05:00</updated>
+  <updated>2016-04-07T00:48:07+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,41 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Windows со встроенной Ubuntu и Bash через программу Microsoft Insider Preview еще недоступна]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/"/>
+    <updated>2016-04-07T00:26:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available</id>
+    <content type="html"><![CDATA[<p>Все конечно слышали, что Microsoft и Canonical сговорились и встроили в винду линукс. Так вот, его пока еще нельзя потрогать. <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">Пруф</a>.</p>
+
+<!-- more -->
+
+
+<p>Вчера утром пришло письмо от Microsoft:</p>
+
+<blockquote><p>Только что закончилась ежегодная конференция разработчиков Build 2016, на которой мы представили новые функции Windows 10.
+Вы сможете в числе первых опробовать эти новые функции, выбрав &ldquo;быстрый&rdquo; или &ldquo;медленный&rdquo; круг обновлений. Подробную информацию о новых возможностях читайте в записи блога Гейба о последней сборке Windows 10 Insider Preview. Обратите внимание, что для участников программы предварительной оценки, которые хотят выполнить чистую установку этой сборки или запустить ее в виртуальной машине, доступны ISO-образы. (на английском языке.)</p></blockquote>
+
+<p>Я конечно пришел домой вечером, скачал ISO, поставил на Virtualbox, сегодня на обеде думал: &ldquo;Приду домой, посмотрю, что там за линукс&rdquo;. Удивлялся, что до сих пор не гуглятся обзоры фичи.</p>
+
+<p>Включил виртуалку, x64, English, что дальше делать - не понятно. Нагуглил официальные страницы фичи:</p>
+
+<ul>
+<li><a href="https://blogs.windows.com/windowsexperience/2016/04/06/announcing-windows-10-insider-preview-build-14316/">Анонс билда</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/commandline/wsl/about">Видео с конференции BUILD</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation">Github</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation/blob/master/commandline/WSL/install_guide.md">Инструкция по включению фичи</a></li>
+</ul>
+
+
+<p>Чтобы обновление пришло, нужно в настройках центра обновлений включить режим разработчика, переключиться на Insider level: fast, обновиться минимум до build 14316</p>
+
+<p>Все стало понятно из этого <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">issue</a>, кто-то, включая меня, застрял на сборке 14295.</p>
+
+<p>Ждем.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Интеграция Git, Gitlab и Planfix почти как на Github]]></title>
@@ -304,6 +339,9 @@ curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | gre
 под Mac этот плейбук не расчитан, к тому же версию ему надо было указвать вручную.
 Поэтому написал скрипт, не совместимый с Ubuntu :)</p>
 
+<p>UPD: 06.06.2016
+Сегодня вышла EAP 2016.1.1, так вот, теперь app ставится не в PhpStormEAP, как раньше, а с версией, поэтому мой скрипт перестал работать.</p>
+
 <p><img class="<a" src="href="http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png">http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png</a>"></p>
 
 <!-- more -->
@@ -335,68 +373,6 @@ chmod +x /usr/local/bin/phpstorm-eap-update
 
 <p>В PhpStorm 11 из фич ничего особенного не нашел, зато с этой версии он перешел на использование Java 8,
 не знаю, в этом ли дело, но у меня он вроде перестал тормозить.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Интерактивная Zsh History с поиском и скроллом, Percol]]></title>
-    <link href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/"/>
-    <updated>2015-12-10T19:55:20+05:00</updated>
-    <id>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search</id>
-    <content type="html"><![CDATA[<p>Если кто не знает, в bash/zsh есть поиск по истории комманд, если нажать <code>Ctrl+R</code> и начать набирать
-команду, отобразится последняя команда из истории, для навигации можно использовать
-<code>Ctrl+R</code>, <code>Ctrl+Shift+R</code>. При этом видно одновременно видно только одну команду из истории.</p>
-
-<p>Утилита <a href="https://github.com/mooz/percol#zsh-history-search">percol</a> решает эту проблему.</p>
-
-<p><img src="/images/2015-12/percol.gif"></p>
-
-<!-- more -->
-
-
-<p>Собственно по ссылке выше готовый конфиг для zsh. Я немного изменил его под себя,
-чтобы использовать percol не только для поиска по истории:</p>
-
-<pre><code class="bash zsh-percol https://github.com/popstas/zsh-config/blob/master/.zshrc">function exists { which $1 &amp;&gt; /dev/null }
-if exists percol; then
-    function percol_select_history() {
-        local tac
-        exists gtac &amp;&amp; tac="gtac" || { exists tac &amp;&amp; tac="tac" || { tac="tail -r" } }
-        BUFFER=$(fc -l -n 1 | eval $tac | percol --query "$LBUFFER")
-        CURSOR=$#BUFFER         # move cursor
-        zle -R -c               # refresh
-    }
-
-    zle -N percol_select_history
-    bindkey '^R' percol_select_history
-
-    # percol based grep
-    g() { percol --match-method regex --query="$*"; }
-fi
-</code></pre>
-
-<p>Код я добавил в <a href="https://github.com/popstas/zsh-config">свой .zshrc</a>. Если <a href="https://github.com/robbyrussell/oh-my-zsh/pull/4582">этот пулл реквест</a> примут, то данный код появится в составе
-<a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a> в виде плагина <code>percol</code>.</p>
-
-<p>Код полностью взят со страницы percol, от себя добавил функцию g(), она кстати конфиликтует с плагином git для oh-my-zsh,
-зато теперь я могу писать что-то вроде:
-<code>bash
-find . -type file | g
-</code>
-для интерактивного выбора результатов поиска и просто для замены grep. При этом доступен мультивыбор по <code>Ctrl+Space</code>.</p>
-
-<p>Пример посложнее:
-<code>
-vim $(find -name "*.markdown" | g)
-</code>
-После запуска откроется список всех <code>.markdown</code> файлов в текущей и вложенных папках, выбранный файл сразу откроется в Vim.
-Это как будто у вас появилась возможность приделывать midnight commander к результатам поиска!</p>
-
-<p>Смотрите больше интересных примеров <a href="https://github.com/mooz/percol">на странице проекта</a>.</p>
-
-<p>Надо сказать, что на github есть программы с таким же функционалом, как у percol, я об этом узнал на странице самого percol.
-Там есть peco, клон percol на Go (а значит поставляется в виде одного бинарника). Мне проще через pip установить percol, так
-что с аналогами не сравнивал.</p>
 ]]></content>
   </entry>
   

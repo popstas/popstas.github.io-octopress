@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Changelog | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/changelog/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-03-27T11:15:43+05:00</updated>
+  <updated>2016-04-07T00:48:07+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -175,6 +175,18 @@ conventional-changelog -i CHANGELOG.md -s -r 0
 </code></p>
 
 <p>После этого я конечно побежал исправлять логи у проектов, которым сделал логи час назад, вот что вышло: <a href="https://github.com/popstas/site-setup/blob/fd159ed7848aaf8695642bcb53c795922d307dd6/CHANGELOG.md">site-setup</a>, <a href="https://github.com/popstas/server-scripts/blob/ef6138faf0179f31929ff0d90d98466749d4f85b/CHANGELOG.md">server-scripts</a>, <a href="https://github.com/popstas/drupal-scripts/blob/3eb923c09e319a163f9fea9669dfa735b60044c1/CHANGELOG.md">drupal-scripts</a>.</p>
+
+<p>Для проектов на своем Gitlab все сложнее: чтобы правильно делались ссылки на коммиты, нужно, во-первых, указать адрес проекта через файл package.json:
+<code>
+{
+  "name": "myproject",
+  "repository": {
+    "type": "git",
+    "url": "http://my.gitlab.ru/projects/myproject.git"
+  }
+}
+</code>
+А во-вторых не знаю, что надо сделать, он генерит ссылки с сокращенными хэшами, которые Github понимает, а Gitlab открывает страницу списка коммитов, т.к. ему нужен полный хэш, шаблон сходу не нашел.</p>
 
 <p>Дальше искать не стал, думаю это оно самое.</p>
 
