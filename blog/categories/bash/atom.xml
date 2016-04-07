@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bash | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/bash/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-04-07T00:57:02+05:00</updated>
+  <updated>2016-04-07T13:42:43+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -41,6 +41,8 @@
 <li><a href="https://github.com/Microsoft/CommandLine-Documentation/blob/master/commandline/WSL/install_guide.md">Инструкция по включению фичи</a></li>
 </ul>
 
+
+<p>Уже написана <a href="http://blog.zacorp.ru/main/kak-vklyuchit-podderzhku-ubuntu-v-windows-10/">инструкция по обновлению до Windows subsystem for Linux</a> на русском, но до рабочей фичи ее автор тоже не дошел.</p>
 
 <p>Чтобы обновление пришло, нужно в настройках центра обновлений включить режим разработчика, переключиться на Insider level: fast, обновиться минимум до build 14316</p>
 
