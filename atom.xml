@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-04-07T13:45:53+05:00</updated>
+  <updated>2016-04-11T01:44:42+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -20,8 +20,10 @@
     <id>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available</id>
     <content type="html"><![CDATA[<p>Все конечно слышали, что Microsoft и Canonical сговорились и встроили в винду линукс. Так вот, его пока еще нельзя потрогать.</p>
 
+<p>UPD 11.04.2016: сборка 14316 дошла до меня, смотрите инструкцию по настройке.</p>
+
 <ul>
-<li><a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">Пруф</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">issue про недоступность сборки 14316</a></li>
 <li><a href="http://blog.zacorp.ru/main/kak-vklyuchit-podderzhku-ubuntu-v-windows-10/">Инструкция по обновлению на русском</a></li>
 </ul>
 
@@ -450,122 +452,11 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Average: измерение среднего времени выполнения команды в Bash]]></title>
+    <title type="html"><![CDATA[Average Time of Script Execution in Bash]]></title>
     <link href="http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/"/>
-    <updated>2016-02-29T03:46:56+05:00</updated>
+    <updated>2016-02-29T00:00:00+05:00</updated>
     <id>http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash</id>
-    <content type="html"><![CDATA[<p>Периодически хочется посчитать среднее время, у меня были такие сценарии:</p>
-
-<ul>
-<li>простая проверка скорости загрузки страницы</li>
-<li>подбор оптимальных параметров к команде</li>
-<li>сравнение разных команд</li>
-</ul>
-
-
-<p>Раньше я просто запускал несколько раз с <code>time</code>, смотрел результат, у уме делил.
-Но мне это надоело, поэтому написал скрипт <code>average</code>.</p>
-
-<!-- more -->
-
-
-<p>Код лежит здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/average">https://github.com/popstas/server-scripts/blob/master/bin/average</a></p>
-
-<p>Поставить можно так:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s "https://raw.githubusercontent.com/popstas/server-scripts/master/bin/average" &gt; /usr/local/bin/average
-</span><span class='line'>chmod +x /usr/local/bin/average</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Использовать можно так:</p>
-
-<p>Запуск команды по умолчанию, 5 циклов:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>average 'command'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Запуск команды с указанным кол-вом циклов:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>average 10 'command'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Запуск команды с передачей кол-ва циклов через переменную окружения:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>export CYCLES=5
-</span><span class='line'>average 'command'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Чтобы не показывать вывод команды, можно обрезать его через tail:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>average 'command' | tail -n1</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Узнать среднее время загрузки страницы:</h3>
-
-<p>С учетом кэша:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>average 'curl -s "http://example.com/" &gt; /dev/null'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>В обход кэша:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>average 'curl -s "http://example.com/?t=$RANDOM" &gt; /dev/null'</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<h3>Продвинутое использование</h3>
-
-<p>Мне надо было узнать оптимальное количество параллельных процессов для запуска тестов,
-теперь я могу узнать это запуском одной команды:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail -n1); done</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Команда переберет кол-во процессов от 1 до 10, по каждой итерации выведет среднее время.</p>
-
-<p>После запуска получил такие результаты:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail -n1); done
-</span><span class='line'>
-</span><span class='line'>1 - 1 loops, best of 5: 13.9 sec per loop
-</span><span class='line'>2 - 1 loops, best of 5: 7.51 sec per loop
-</span><span class='line'>3 - 1 loops, best of 5: 5.51 sec per loop
-</span><span class='line'>4 - 1 loops, best of 5: 4.51 sec per loop
-</span><span class='line'>5 - 1 loops, best of 5: 4.42 sec per loop
-</span><span class='line'>6 - 1 loops, best of 5: 4.71 sec per loop
-</span><span class='line'>7 - 1 loops, best of 5: 4.21 sec per loop
-</span><span class='line'>8 - 1 loops, best of 5: 4.23 sec per loop
-</span><span class='line'>9 - 1 loops, best of 5: 4.13 sec per loop
-</span><span class='line'>10 - 1 loops, best of 5: 4.33 sec per loop</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Видно, что после 4 потоков разницы почти нет, а вот комп от запуска кучи параллельных процессов тормозит
-очень даже заметно.</p>
-
-<p>Конечно, в этом случае много ума не надо, чтобы понять, что кол-во процессов должно быть по кол-ву ядер, но я что-то засомневался :)</p>
+    <content type="html"><![CDATA[<p>asdfg</p>
 ]]></content>
   </entry>
   

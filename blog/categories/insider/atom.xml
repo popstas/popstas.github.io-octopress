@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Insider | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/insider/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-04-07T13:45:53+05:00</updated>
+  <updated>2016-04-11T01:44:42+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -20,8 +20,10 @@
     <id>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available</id>
     <content type="html"><![CDATA[<p>Все конечно слышали, что Microsoft и Canonical сговорились и встроили в винду линукс. Так вот, его пока еще нельзя потрогать.</p>
 
+<p>UPD 11.04.2016: сборка 14316 дошла до меня, смотрите инструкцию по настройке.</p>
+
 <ul>
-<li><a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">Пруф</a></li>
+<li><a href="https://github.com/Microsoft/CommandLine-Documentation/issues/5">issue про недоступность сборки 14316</a></li>
 <li><a href="http://blog.zacorp.ru/main/kak-vklyuchit-podderzhku-ubuntu-v-windows-10/">Инструкция по обновлению на русском</a></li>
 </ul>
 
