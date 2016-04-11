@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows/</loc>
+    <lastmod>2016-04-11T05:01:00+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/</loc>
     <lastmod>2016-04-07T00:26:00+05:00</lastmod>
   </url>
@@ -174,7 +178,7 @@
     <loc>http://blog.popstas.ru/blog/categories/insider/</loc>
   </url>
   <url>
-    <loc>http://blog.popstas.ru/posts/2/</loc>
+    <loc>http://blog.popstas.ru/blog/categories/windows/</loc>
   </url>
   <url>
     <loc>http://blog.popstas.ru/yandex_7f20074a82880830.html</loc>

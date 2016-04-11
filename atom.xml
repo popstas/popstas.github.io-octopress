@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-04-11T01:44:42+05:00</updated>
+  <updated>2016-04-11T05:51:34+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Bash on Ubuntu on Windows: первый блин]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows/"/>
+    <updated>2016-04-11T05:01:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows</id>
+    <content type="html"><![CDATA[<p>Итак, <a href="http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/">дождался обновления</a> Windows, поставил в нее Ubuntu <a href="http://blog.zacorp.ru/main/kak-vklyuchit-podderzhku-ubuntu-v-windows-10/">по инструкции</a>, вот что было дальше:</p>
+
+<p>Tl;dr: оно очень сырое, не работает почти ничего.</p>
+
+<p><img src="http://blog.popstas.ru/images/2016-04/windows-ubuntu-bash.png"></p>
+
+<!--more -->
+
+
+<p>Первым делом захотелось родной zsh, берем aptitude, ставим, Ubuntu же!
+Шелл открылся под root, так что sudo не нужен.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ aptitude install zsh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Конечно, ничего не вышло :) Во-первых, aptitude не нашел файл /var/lock/aptitude,
+нет проблем, ставим через <code>apt-get</code>, но оказывается, что нет инета.</p>
+
+<p>Про это есть <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/14">issue#14</a> (а багов за 4 дня открыли 40+), оказалось, дело в DNS, лечится так:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ echo "nameserver 8.8.8.8" &gt; /etc/resolv.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>При этом не заработает ifconfig, ping, nslookup, но пакеты начнут ставиться.
+apt-get при установке поругивается, но ставит.</p>
+
+<h1>Zsh</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get update && apt-get install git zsh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ок, сработало, ставлю свой <a href="https://github.com/popstas/zsh-config">zsh-config</a>
+Что-то пошло не так с пайпами, но в итоге он поставился. Кстати git работает как родной.</p>
+
+<p>Открываю новый терминал, открывается bash, смотрю /etc/passwd, там написано, что
+шелл /bin/zsh. Ладно, запускаю zsh вручную, он вывалил кучу ошибок про powerline,
+что-то от zsh, никакой красоты не появилось.</p>
+
+<p>Ок, упрощаем, удаляю свой конфиг, открываю чистый zsh - все равно облом.</p>
+
+<p>Ладно, не в zsh счастье (или все-таки в нем?).</p>
+
+<p>Открываю <code>mc</code>, он как бы работает, но после первого нажатия Enter курсоры перестают бегать.
+Выходим, идем дальше.</p>
+
+<h1>Python</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install python-pip python-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Все поставилось.
+Смотрим pip:</p>
+
+<ul>
+<li><code>glances</code> - не работает</li>
+<li><a href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/">percol</a> - работает!</li>
+<li><code>ansible</code> - ругается при запуске про <code>Function not implemented</code></li>
+<li><code>ps_mem</code> - конечно нет</li>
+<li><code>httpie</code> - работает!</li>
+</ul>
+
+
+<h1>SSH</h1>
+
+<p>Тащим ключ с домашней машины</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rsync popstas@home:/Users/popstas/.ssh/id_dsa ~/.ssh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Работает!</p>
+
+<p>Подключаюсь к удаленному хосту - тоже работает!
+Там зашел в <code>mc</code>, стало понятно, что глючит терминал: на удаленке курсоры тоже бегают плохо.
+Ок, терминал будет, потом.</p>
+
+<h1>PHP</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install php5-cli</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PHP работает.
+Composer ставится, но при попытке установить им что-нибудь зависает.</p>
+
+<h1>Nginx</h1>
+
+<p>Ставится, но не стартует, в error.log пишет, что не может прибиндиться к сокету.</p>
+
+<h1>Вывод</h1>
+
+<p>Пользоваться этим сейчас конечно нельзя и в ближайший месяц думаю можно не надеяться.
+Я рассчитывал на большее, ну ладно, будем надеяться, что у Microsoft получится сделать
+полноценный линукс, хотя видно, что работы тут еще немеряно.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Windows 10 Build 14316 со встроенной Ubuntu и Bash через программу Microsoft Insider Preview доступна не всем]]></title>

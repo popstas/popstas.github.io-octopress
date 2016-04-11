@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Быстрое обновление PhpStorm EAP на Mac OS через Bash - Popstas</title>
+  <title>Bash on Ubuntu on Windows: первый блин - Popstas</title>
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Надоело постоянно обновлять PhpStorm руками. На Ubuntu последнее время делал это с помощью ansible,
-под Mac этот плейбук не расчитан, к тому же &hellip;">
+  <meta name="description" content="Итак, дождался обновления Windows, поставил в нее Ubuntu по инструкции, вот что было дальше: Tl;dr: оно очень сырое, не работает почти ничего. Первым &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/">
+  <link rel="canonical" href="http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Popstas" type="application/atom+xml">
@@ -81,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">Быстрое обновление PhpStorm EAP на Mac OS через Bash</h1>
+      <h1 class="entry-title">Bash on Ubuntu on Windows: первый блин</h1>
     
     
       <p class="meta">
@@ -90,53 +89,111 @@
 
 
 
-<time class='entry-date' datetime='2016-01-17T07:50:17+05:00'><span class='date'>17.01.16</span> <span class='time'>7:50 am</span></time>
+<time class='entry-date' datetime='2016-04-11T05:01:00+05:00'><span class='date'>11.04.16</span> <span class='time'>5:01 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Надоело постоянно обновлять PhpStorm руками. На Ubuntu последнее время делал это с помощью ansible,
-под Mac этот плейбук не расчитан, к тому же версию ему надо было указвать вручную.
-Поэтому написал скрипт, не совместимый с Ubuntu :)</p>
+<div class="entry-content"><p>Итак, <a href="http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/">дождался обновления</a> Windows, поставил в нее Ubuntu <a href="http://blog.zacorp.ru/main/kak-vklyuchit-podderzhku-ubuntu-v-windows-10/">по инструкции</a>, вот что было дальше:</p>
 
-<p>UPD: 06.06.2016
-Сегодня вышла EAP 2016.1.1, так вот, теперь app ставится не в PhpStormEAP, как раньше, а с версией, поэтому мой скрипт перестал работать.</p>
+<p>Tl;dr: оно очень сырое, не работает почти ничего.</p>
 
-<p><img src="http://blog.jetbrains.com/phpstorm/files/2016/01/PhpStorm11EAP_splash_2@2x.png"></p>
+<p><img src="/images/2016-04/windows-ubuntu-bash.png"></p>
 
-<!-- more -->
+<!--more -->
 
 
-<p>Что он делает:</p>
+<p>Первым делом захотелось родной zsh, берем aptitude, ставим, Ubuntu же!
+Шелл открылся под root, так что sudo не нужен.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ aptitude install zsh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Конечно, ничего не вышло :) Во-первых, aptitude не нашел файл /var/lock/aptitude,
+нет проблем, ставим через <code>apt-get</code>, но оказывается, что нет инета.</p>
+
+<p>Про это есть <a href="https://github.com/Microsoft/CommandLine-Documentation/issues/14">issue#14</a> (а багов за 4 дня открыли 40+), оказалось, дело в DNS, лечится так:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ echo "nameserver 8.8.8.8" &gt; /etc/resolv.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>При этом не заработает ifconfig, ping, nslookup, но пакеты начнут ставиться.
+apt-get при установке поругивается, но ставит.</p>
+
+<h1>Zsh</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get update && apt-get install git zsh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ок, сработало, ставлю свой <a href="https://github.com/popstas/zsh-config">zsh-config</a>
+Что-то пошло не так с пайпами, но в итоге он поставился. Кстати git работает как родной.</p>
+
+<p>Открываю новый терминал, открывается bash, смотрю /etc/passwd, там написано, что
+шелл /bin/zsh. Ладно, запускаю zsh вручную, он вывалил кучу ошибок про powerline,
+что-то от zsh, никакой красоты не появилось.</p>
+
+<p>Ок, упрощаем, удаляю свой конфиг, открываю чистый zsh - все равно облом.</p>
+
+<p>Ладно, не в zsh счастье (или все-таки в нем?).</p>
+
+<p>Открываю <code>mc</code>, он как бы работает, но после первого нажатия Enter курсоры перестают бегать.
+Выходим, идем дальше.</p>
+
+<h1>Python</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install python-pip python-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Все поставилось.
+Смотрим pip:</p>
 
 <ul>
-<li>идет на страницу EAP, находит там версию</li>
-<li>проверяет, что на компе стоит другая версия EAP</li>
-<li>качает dmg в папку Загрузки</li>
-<li>монтирует образ</li>
-<li>завершает PhpStorm, если он открыт</li>
-<li>удаляет текущую версию и копирует новую в папку /Applications</li>
-<li>запускает новую версию</li>
+<li><code>glances</code> - не работает</li>
+<li><a href="http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/">percol</a> - работает!</li>
+<li><code>ansible</code> - ругается при запуске про <code>Function not implemented</code></li>
+<li><code>ps_mem</code> - конечно нет</li>
+<li><code>httpie</code> - работает!</li>
 </ul>
 
 
-<p>Поставить можно так:</p>
+<h1>SSH</h1>
+
+<p>Тащим ключ с домашней машины</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s "https://gist.githubusercontent.com/popstas/613a72a34576b85caec4/raw/644f457ed0187ab0d1207576e925c06260451131/phpstorm-eap-update.sh" &gt; /usr/local/bin/phpstorm-eap-update
-</span><span class='line'>chmod +x /usr/local/bin/phpstorm-eap-update</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rsync popstas@home:/Users/popstas/.ssh/id_dsa ~/.ssh</span></code></pre></td></tr></table></div></figure>
 
 
-<p>После чего можно обновлять просто запуском <code>phpstorm-eap-update</code>.
-По идее можно даже в cron его засунуть, чтобы совсем автомат, но я и так узнаю о новой версии из rss.</p>
+<p>Работает!</p>
 
-<p>Код лежит здесь - <a href="https://gist.github.com/popstas/613a72a34576b85caec4">https://gist.github.com/popstas/613a72a34576b85caec4</a></p>
+<p>Подключаюсь к удаленному хосту - тоже работает!
+Там зашел в <code>mc</code>, стало понятно, что глючит терминал: на удаленке курсоры тоже бегают плохо.
+Ок, терминал будет, потом.</p>
 
-<p>В PhpStorm 11 из фич ничего особенного не нашел, зато с этой версии он перешел на использование Java 8,
-не знаю, в этом ли дело, но у меня он вроде перестал тормозить.</p>
+<h1>PHP</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install php5-cli</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PHP работает.
+Composer ставится, но при попытке установить им что-нибудь зависает.</p>
+
+<h1>Nginx</h1>
+
+<p>Ставится, но не стартует, в error.log пишет, что не может прибиндиться к сокету.</p>
+
+<h1>Вывод</h1>
+
+<p>Пользоваться этим сейчас конечно нельзя и в ближайший месяц думаю можно не надеяться.
+Я рассчитывал на большее, ну ладно, будем надеяться, что у Microsoft получится сделать
+полноценный линукс, хотя видно, что работы тут еще немеряно.</p>
 </div>
 
 
@@ -152,12 +209,12 @@
 
 
 
-<time class='entry-date' datetime='2016-01-17T07:50:17+05:00'><span class='date'>17.01.16</span> <span class='time'>7:50 am</span></time>
+<time class='entry-date' datetime='2016-04-11T05:01:00+05:00'><span class='date'>11.04.16</span> <span class='time'>5:01 am</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/bash/'>bash</a>, <a class='category' href='/blog/categories/fast/'>fast</a>, <a class='category' href='/blog/categories/macos/'>macos</a>, <a class='category' href='/blog/categories/phpstorm/'>phpstorm</a>
+    <a class='category' href='/blog/categories/bash/'>bash</a>, <a class='category' href='/blog/categories/microsoft/'>microsoft</a>, <a class='category' href='/blog/categories/ubuntu/'>ubuntu</a>, <a class='category' href='/blog/categories/windows/'>windows</a>
   
 </span>
 
@@ -194,20 +251,12 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/12/10/interactive-bash-history-with-search/" title="Previous Post: Интерактивная Zsh history с поиском и скроллом, percol">&laquo; Интерактивная Zsh history с поиском и скроллом, percol</a>
+        <a class="basic-alignment left" href="/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/" title="Previous Post: Windows 10 build 14316 со встроенной Ubuntu и bash через программу Microsoft Insider Preview доступна не всем">&laquo; Windows 10 build 14316 со встроенной Ubuntu и bash через программу Microsoft Insider Preview доступна не всем</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/01/17/torrent-transmission-client-for-weburg/" title="Next Post: Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana">Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana &raquo;</a>
       
     </p>
   </footer>
 </article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
 
 </div>
 
@@ -304,10 +353,7 @@
       var disqus_shortname = 'popstas';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/';
-        var disqus_url = 'http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
