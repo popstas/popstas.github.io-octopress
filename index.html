@@ -9,7 +9,7 @@
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Итак, дождался обновления Windows, поставил в нее Ubuntu по инструкции, вот что было дальше: Tl;dr: оно очень сырое, не работает почти ничего. ">
+  <meta name="description" content="Несколько недель назад я начал разбираться с Kapacitor, попутно записывая свои действия. Конца разбирательствам было не видно, записей становилось &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,48 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/">Kapacitor: часть 1. Введение, сравнение с Monit, установка с Ansible и без, настройка</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-19T00:47:52+05:00'><span class='date'>19.05.16</span> <span class='time'>12:47 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Несколько недель назад я начал разбираться с Kapacitor, попутно записывая свои действия. Конца разбирательствам было не видно, записей становилось все больше и накопилось на серию.</p>
+
+<p>Речь пойдет о Kapacitor, последнеем слое из стека <a href="https://influxdata.com/get-started/what-is-the-tick-stack/">TICK</a> от InfluxData.</p>
+
+<p>Tl;dr: думаю, что Kapacitor нужен только тем, кто уже использует InfluxDB для сбора метрик. С установкой могут быть проблемы, если руки кривые.</p>
+
+<p>А также небольшое замечание о том, <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/#github-pull-request">как делать Pull request'ы на 100% из браузера</a></p>
+
+<p><img style="background:#1F242D" src="/images/2016-05/kapacitor.svg" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/">Читать &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -463,50 +505,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/">E.ggtimer: таймер в пару кликов в любом браузере</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-31T01:43:24+05:00'><span class='date'>31.01.16</span> <span class='time'>1:43 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Бывает, что надо вспомнить о чем-то в ближайшее время: выключить чайник, выйти к подъезду через 10 минут,
-бросить заниматься фигней через полчаса - для таких вещей идеально подходит таймер. От таймера требуется только одно:
-возможность установить его в течение 5 секунд. Недавно я нашел такой с такими плюсами:</p>
-
-<ul>
-<li>Настроить нужно один раз, после этого будет работать на всех системах, если включена синхронизация настроек браузера</li>
-<li>Пользоваться легко</li>
-</ul>
-
-
-<p><img src="/images/2016-01/eggtimer.png"></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/">Читать &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -522,6 +520,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/">Kapacitor: часть 1. Введение, сравнение с Monit, установка с Ansible и без, настройка</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/04/11/bash-on-ubuntu-on-windows/">Bash on Ubuntu on Windows: первый блин</a>
       </li>
     
@@ -535,10 +537,6 @@
     
       <li class="post">
         <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/02/29/average-time-of-script-execution-in-bash/">Average: измерение среднего времени выполнения команды в Bash</a>
       </li>
     
   </ul>

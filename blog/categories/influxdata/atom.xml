@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Influxdata | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/influxdata/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-01T02:11:47+05:00</updated>
+  <updated>2016-05-19T04:47:56+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,170 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kapacitor: часть 1. Введение, сравнение с Monit, установка с Ansible и без, настройка]]></title>
+    <link href="http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/"/>
+    <updated>2016-05-19T00:47:52+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion</id>
+    <content type="html"><![CDATA[<p>Несколько недель назад я начал разбираться с Kapacitor, попутно записывая свои действия. Конца разбирательствам было не видно, записей становилось все больше и накопилось на серию.</p>
+
+<p>Речь пойдет о Kapacitor, последнеем слое из стека <a href="https://influxdata.com/get-started/what-is-the-tick-stack/">TICK</a> от InfluxData.</p>
+
+<p>Tl;dr: думаю, что Kapacitor нужен только тем, кто уже использует InfluxDB для сбора метрик. С установкой могут быть проблемы, если руки кривые.</p>
+
+<p>А также небольшое замечание о том, <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/#github-pull-request">как делать Pull request'ы на 100% из браузера</a></p>
+
+<p><img style="background:#1F242D" src="http://blog.popstas.ru/images/2016-05/kapacitor.svg" /></p>
+
+<!-- more -->
+
+
+<p>Я уже настроил три слоя из стека: на серверах стоят агенты Telegraf, передают метрики в InfluxDB, их можно смотреть в виде графиков через Grafana (InfluxData предлагает свой Chronograf, но он сильно отстает от Grafana по функционалу на январь 2016 и вряд ли это изменится).</p>
+
+<p>У этой схемы есть недостаток: чтобы узнать, что что-то идет не так, нужно зайти в Grafana и глазами найти это что-то. Это меня устраивает, когда я уже знаю, что сервер плохо себя чувствует.</p>
+
+<p>Kapacitor нужен для уведомлений, алертинга. В 2 словах: это демон, который умеет пропускать через себя данные, приходящие в InfluxDB, обрабатывать их и пересылать по разным каналам связи / на HTTP / в базу данных.</p>
+
+<p>Для меня Kapacitor - прямой конкурент Monit, поэтому сравниваю с ним, больше ни с чем подобным дел не имел, но слышал, что для мониторинга серверов правильные пацаны используют Zabbix, Nagios/Icinga, Sensu, Riemann. Я решил пока не добавлять софта на сервера, да и уведомлять на основе уже собранных данных мне кажется правильным, этим объясняется мой выбор в пользу Kapacitor.</p>
+
+<h3>Плюсы Kapacitor</h3>
+
+<ol>
+<li>Убирание лишнего. Kapacitor не надо ставить агентом, роль агента выполняет Telegraf. Monit, которым я пользуюсь сейчас для алертинга, дублирует функционал, собирая метрики самостоятельно.</li>
+<li>Надежный алертинг. У monit тут есть проблема: когда умирает сервер, monit, установленный там, тоже умирает и не успевает отправить алерт на email. Надежный, кроме случаев, когда падает Kapacitor или InfluxDB, что случается.</li>
+<li>Продвинутый алертинг. Monit умеет мало (ладно, много, но я умею на нем мало). Kapacitor имеет в распоряжении данные всех моих серверов, что позволяет ему смотреть на них как на систему. У меня в этом месте фантазия начинает играть, не буду расписывать, что по моему мнению можно отслеживать через Kapacitor, так как может такого и нельзя :)</li>
+<li>Каналы алертинга. Заявлена поддержка HipChat, OpsGenie, Alerta, Sensu, PagerDuty, Slack, VictorOps, кроме этого есть запись в лог, email, POST-запрос. Для разных событий можно указывать разные каналы. Monit умеет только email, а мне нужен был Slack.</li>
+</ol>
+
+
+<h3>Плюсы Monit:</h3>
+
+<ol>
+<li>Monit проверенный, а Kapacitor - нет, как и весь TICK.</li>
+<li>Monit имеет прямой доступ к серверу, что позволяет ему реагировать самостоятельно, например, перезагружать сервис, если он не отвечает. Kapacitor умеет только уведомлять.</li>
+</ol>
+
+
+<h2>Установка</h2>
+
+<p>Ставить можно <a href="https://influxdata.com/downloads/#kapacitor">по-разному</a>.</p>
+
+<p>Для тех, кто не дружит с Ansible, установка из репозитория, <a href="https://docs.influxdata.com/influxdb/v0.13/introduction/installation/">взятая из мануала</a> по InfluxDB (репозиторий один на весь стек InfluxData):</p>
+
+<pre><code class="sh">curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+source /etc/lsb-release
+echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+aptitude update
+aptitude install kapacitor
+</code></pre>
+
+<p>Я буду ставить через Ansible <a href="https://github.com/rossmcdonald/kapacitor">rossmcdonald/kapacitor</a></p>
+
+<pre><code class="sh">ansible-galaxy install rossmcdonald.kapacitor
+ansible-playbook -c local kapacitor.yml
+</code></pre>
+
+<h4><a name="github-pull-request"></a>Как просто делать Pull request</h4>
+
+<p>В плейбуке была ошибка, я бы об этом не упоминал, если бы не узнал недавно, как просто <a href="https://github.com/rossmcdonald/kapacitor/pull/1">делать pull request</a> прямо в браузере. Это заняло минуты две: жмем &ldquo;редактировать&rdquo; на интересующем файле, правим, ниже пишем сообщение к коммиту, сохраняем. Это автоматом создаст форк, отдельную ветку и сделает туда коммит. На следующей странице останется нажать &ldquo;Create pull request&rdquo;.</p>
+
+<h2>Настройка</h2>
+
+<p>Так как я уже использовал готовую ansible-роль, настройка уже включена в установку. Я взял <a href="https://github.com/rossmcdonald/kapacitor/blob/master/test.yml">тестовый плейбук</a> роли и изменил его: добавил данные авторизации в InfluxDB, SMTP, Slack. Опция <code>global</code> в настройках канала для уведомлений означает, что он будет использоваться по умолчанию в скриптах, иначе его нужно указывать явно.</p>
+
+<p>Для установки сделал такой плейбук:</p>
+
+<pre><code class="yaml kapacitor.yml">- hosts: all
+  roles:
+    - role: rossmcdonald.kapacitor
+  vars:
+    # [influxdb]
+    kapacitor_influxdb_enabled: "true"
+    kapacitor_influxdb_urls:
+      - http://localhost:8086
+    kapacitor_influxdb_username: user
+    kapacitor_influxdb_password: pass
+
+    # [smtp]
+    kapacitor_smtp_enabled: "true"
+    kapacitor_smtp_host: smtp.yandex.ru
+    kapacitor_smtp_port: 587
+    kapacitor_smtp_username: example@yandex.ru
+    kapacitor_smtp_password: pass
+    kapacitor_smtp_from: example@yandex.ru
+    kapacitor_smtp_to:
+      - "admin@example.com"
+
+    # [slack]
+    kapacitor_slack_enabled: "true"
+    kapacitor_slack_url:  https://hooks.slack.com/services/G2JFW7VFQ/B13UHEN5X/9J6IVIcUw9FGCeF7hfjFNGBn # url ненастоящий
+    kapacitor_slack_channel: "#servers"
+    kapacitor_slack_global: "true"
+
+    kapacitor_tasks_to_enable:
+</code></pre>
+
+<h2>Проверка</h2>
+
+<p>Лучший способ проверить, что Kapacitor видит данные из InfluxDB - записать фрагмент:</p>
+
+<pre><code class="sh">kapacitor record stream -name la_alert -duration 5s
+</code></pre>
+
+<p>Если запись пошла, можно приступать к самому интересному: созданию алертов.</p>
+
+<p>Если через 5 секунд команда не завершилась, значит что-то пошло не так.
+Смотрим логи:</p>
+
+<ul>
+<li>Kapacitor может говорить об ошибках к подключению к InfluxDB</li>
+<li>InfluxDB может сыпать <code>connection refused</code> ошибками</li>
+</ul>
+
+
+<p>В моем случае домен, который я прописал в конфиге Kapacitor, был прописан в /etc/hosts на 127.0.1.1, Kapacitor слушал этот порт, соответственно, InfluxDB не мог достучаться из Docker-контейнера.</p>
+
+<h4>Проблема из-за Docker</h4>
+
+<p>У меня в логах была ошибка:</p>
+
+<pre><code>open server: open service *influxdb.Service: subscription already exists
+</code></pre>
+
+<p>Я указал другой локальный хост, localhost, т.к. я не предполагаю, что к kapacitor будет обращаться кто-то, кроме InfluxDB, который стоит на той же машине. Это не помогло. Я не понял, в чем ошибка, nmap показывает свободный порт. Оставил стандартный, поддомен машины, это почему-то сработало.</p>
+
+<p>Оказалось, проблема была в том, что InfluxDB при первом запуске Kapacitor'а создал на него подписки (subscriptions), которые означают то, что InfluxDB будет пересылать в Kapacitor все, что приходит в него.</p>
+
+<p>InfluxDB у меня крутится в Docker'е с проброшенными портами, а Kapacitor - нет, то есть они технически были не на одной машине. Точнее, для Kapacitor'а казалось, что InfluxDB на этой же машине, но для Influx'a он на другой машине! Оказалось, что изнутри докера внутренний адрес, на который создались подписки, вел не туда, поэтому данные не доходили до Kapacitor, чтобы исправить это, понадобилось удалить подписки, узнав их имена:</p>
+
+<pre><code class="sql">SHOW SUBSCRIPTIONS
+DROP SUBSCRIPTION "kapacitor-42d050d7-5e60-462f-b079-3f8157ec2eff" ON "telegraf"."default"
+DROP SUBSCRIPTION "kapacitor-42d050d7-5e60-462f-b079-3f8157ec2eff" ON "_internal"."monitor"
+</code></pre>
+
+<h2>Выводы</h2>
+
+<ol>
+<li>Использование Docker для InfluxDB сильно усложнило мне процесс установки при том, что ничего мне не дало: InfluxDB - это один бинарник, если у вас вся инфраструктура живет не в контейнерах, используйте установку из репозиториев, это проще. С другой стороны откатиться на предыдущую версию будет сложнее&hellip;</li>
+<li>Kapacitor сильно превосходит Monit по возможностям алертинга, но уступает ему в контроле над ситуацией. Хотя можно себе представить сценарий, что Kapacitor отправляет POST-запрос с инструкциями к действиям сервису, который делает что-то, но меня такой самопальный RPC пугает.</li>
+<li>Все это достаточно сырое в том смысле, что нет достаточной обвязки (оф. <a href="https://hub.docker.com/r/library/influxdb/">контейнер для InfluxDB</a> появился только 16 мая, самый популярный плейбук для Kapacitor понадобилось править, чтобы установить), информации очень мало, кроме GitHub issues и документации на данный момент нет ничего. Поэтому появляющиеся проблемы решать будет сложнее.</li>
+</ol>
+
+
+<h2>Ссылки</h2>
+
+<ul>
+<li><a href="https://influxdata.com/time-series-platform/kapacitor/">страница Kapacitor</a></li>
+<li><a href="https://influxdata.com/get-started/configuring-alerts-with-kapacitor/">оф. туториал</a></li>
+<li><a href="https://docs.influxdata.com/kapacitor/v0.12/">docs</a></li>
+<li><a href="https://github.com/influxdata/kapacitor">influxdata/kapacitor</a></li>
+<li><a href="https://github.com/influxdata/kapacitor-docker">influxdata/kapacitor-docker</a></li>
+<li><a href="https://github.com/rossmcdonald/kapacitor">ansible-role-kapacitor</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Автоматическое скачивание торрентов с Weburg в Transmission и статистика на InfluxDB & Grafana]]></title>
