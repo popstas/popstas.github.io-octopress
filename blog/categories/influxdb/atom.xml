@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Influxdb | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/influxdb/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-19T11:24:35+05:00</updated>
+  <updated>2016-05-19T22:56:37+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -174,7 +174,7 @@ Diamond -> Carbon -> Whisper -> Graphite -> Grafana для рисования г
 <a href="https://influxdata.com/time-series-platform/">TICK</a>, в который
 входит еще и алертинг по отклонениям метрик. Могу сказать о нем то, что Telegraf работает, InfluxDB работает без тормозов,
 собирая с моего компа метрики раз в 10 секунд, Chronograf какой-то неполноценный, по сравнению с Grafana,
-а Kapacitor я еще не смотрел.</p>
+а Kapacitor я еще не смотрел (UPD 19.05.2016: <a href="/blog/categories/kapacitor/">уже смотрел</a>).</p>
 
 <h3>Grafana</h3>
 

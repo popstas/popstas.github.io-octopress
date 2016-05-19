@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Github | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-19T11:24:35+05:00</updated>
+  <updated>2016-05-19T22:56:37+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -24,7 +24,7 @@
 
 <p>Tl;dr: думаю, что Kapacitor нужен только тем, кто уже использует InfluxDB для сбора метрик. С установкой могут быть проблемы, если руки кривые.</p>
 
-<p>А также небольшое замечание о том, <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/#github-pull-request">как делать Pull request'ы на 100% из браузера</a></p>
+<p>А также небольшое замечание о том, <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/#github-pull-request">как делать Pull request'ы из браузера за 2 минуты</a></p>
 
 <p><img style="background:#1F242D" src="http://blog.popstas.ru/images/2016-05/kapacitor.svg" /></p>
 
