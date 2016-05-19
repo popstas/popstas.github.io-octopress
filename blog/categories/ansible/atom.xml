@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ansible | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/ansible/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-19T22:56:37+05:00</updated>
+  <updated>2016-05-19T22:59:53+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -20,7 +20,7 @@
     <id>http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion</id>
     <content type="html"><![CDATA[<p>Несколько недель назад я начал разбираться с Kapacitor, попутно записывая свои действия. Конца разбирательствам было не видно, записей становилось все больше и накопилось на серию.</p>
 
-<p>Речь пойдет о Kapacitor, последнеем слое из стека <a href="https://influxdata.com/get-started/what-is-the-tick-stack/">TICK</a> от InfluxData.</p>
+<p>Речь пойдет о Kapacitor, последнеем слое из стека <a href="https://influxdata.com/get-started/what-is-the-tick-stack/">TICK</a> от InfluxData, набора программ для сбора, отображения и обработке метрик.</p>
 
 <p>Tl;dr: думаю, что Kapacitor нужен только тем, кто уже использует InfluxDB для сбора метрик. С установкой могут быть проблемы, если руки кривые.</p>
 
