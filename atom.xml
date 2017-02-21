@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-19T22:59:53+05:00</updated>
+  <updated>2017-02-22T01:45:47+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,62 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Извлечение одной из папок в Git репозитории в отдельный репозиторий с сохранением истории - Git-extract-subproject]]></title>
+    <link href="http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/"/>
+    <updated>2017-02-22T01:19:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history</id>
+    <content type="html"><![CDATA[<p>Занялся я тут распиливанием большого проекта (дерево ansible ролей) на отдельные репозитории.</p>
+
+<h3>Для этого надо:</h3>
+
+<ol>
+<li>Извлечь директорию подпроекта в отдельный репозиторий</li>
+<li>Удалить из проекта папку подпроекта</li>
+<li>Добавить в большой проект зависимость от подпроекта</li>
+</ol>
+
+
+<p>Ниже написано, как сделать 1-й шаг одной командой через скрипт <code>git-extract-subproject</code>.</p>
+
+<p><img src="http://blog.popstas.ru/images/2017-02/git-extract-subproject.jpg" /></p>
+
+<!-- more -->
+
+
+<p>В общем все оказалось просто, за минуту находится статья об этом - <a href="http://gbayer.com/development/moving-files-from-one-git-repository-to-another-preserving-history/">
+Moving Files from one Git Repository to Another, Preserving History</a>, за 10 минут становится понятно, что как работает.</p>
+
+<p>Мне нужно было проделать эту операцию 10+ раз, поэтому написал скрипт, извлекающий репозиторий одной командой.</p>
+
+<h2>Алгоритм извлечения:</h2>
+
+<ol>
+<li>Клонировать большой проект во временный репозиторий</li>
+<li>Удалить из него все, кроме папки модуля через git-фильтр. При этом переписывается история</li>
+<li>Создать чистый репозиторий для нового модуля</li>
+<li>Добавить в чистый репозиторий временный, как remote source</li>
+<li>Сделать pull из remote source в master</li>
+<li>Подчистить следы</li>
+</ol>
+
+
+<p>По идее уже после п.2 временный репозиторий выглядит как готовый модуль, пп.3-6 нужны для того, чтобы не тащить следы истории и настроек родительского проекта в дочерний.</p>
+
+<p>Например, у меня есть репозиторий <code>ansible-server</code>, в нем лежит роль <code>roles/server-scripts</code>. Тогда нужно перейти в папку ansible-server и запустить:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git-extract-subproject roles/server-scripts ansible-role-server-scripts</span></code></pre></td></tr></table></div></figure>
+
+
+<p>После этого рядом с <code>ansible-server</code> создастся готовый проект <code>ansible-role-server-scripts</code>. Остается добавить в него remote origin куда следует и запушить.</p>
+
+<p>В итоге получился репозиторий с историей - <a href="https://github.com/viasite-ansible/ansible-role-server-scripts/commits/master">viasite-ansible/ansible-role-server-scripts</a>.</p>
+
+<p>Код скрипта здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/git-extract-subproject">popstas/server-scripts</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Kapacitor: часть 1. Введение, сравнение с Monit, установка с Ansible и без, настройка]]></title>
@@ -1417,6 +1473,26 @@ Dockerfile <img src="https://habrastorage.org/files/847/71b/87a/84771b87a8cd4d77
 <li><p>Перетаскивание. Решается эппловским тачпадом.</p></li>
 <li><p>Колесико тоже надеюсь заменить кастомным жестом.</p></li>
 <li><p>С пальцами ничего не сделаешь, уж какие есть, нерешаемая проблема.</p></li>
+</ol>
+
+
+<h1>UPD 15.06.2016</h1>
+
+<p>В конце мая получил свой эппловский тачпад, первую модель. Делюсь впечатлениями:</p>
+
+<ul>
+<li>Какие проблемы решились</li>
+<li>Какие проблемы остались</li>
+<li>Какие проблемы появились</li>
+</ul>
+
+
+<p>Пойду по порядку, по минусам из обзора Wacom.</p>
+
+<ol>
+<li><p>Неудобно перетаскивать. Эта проблема решена просто: добавлена задержка на отпускание. То есть при перетаскивании можно поднимать пальцы на полсекунды, элемент при этом остается захваченным. При этом, задержку можно прервать одиночным тапом.</p></li>
+<li><p>Неудобно выделять. Тут ничего нового, выделять неудобно.</p></li>
+<li><p>Мало жестов. Это решено. Я пока даже не искал ничего, открыл настройки универсального BetterTouchTool, там все есть.</p></li>
 </ol>
 
 

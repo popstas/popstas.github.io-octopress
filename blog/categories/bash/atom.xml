@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bash | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/bash/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2016-05-19T22:59:53+05:00</updated>
+  <updated>2017-02-22T01:45:47+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,61 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Извлечение одной из папок в Git репозитории в отдельный репозиторий с сохранением истории - Git-extract-subproject]]></title>
+    <link href="http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/"/>
+    <updated>2017-02-22T01:19:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history</id>
+    <content type="html"><![CDATA[<p>Занялся я тут распиливанием большого проекта (дерево ansible ролей) на отдельные репозитории.</p>
+
+<h3>Для этого надо:</h3>
+
+<ol>
+<li>Извлечь директорию подпроекта в отдельный репозиторий</li>
+<li>Удалить из проекта папку подпроекта</li>
+<li>Добавить в большой проект зависимость от подпроекта</li>
+</ol>
+
+
+<p>Ниже написано, как сделать 1-й шаг одной командой через скрипт <code>git-extract-subproject</code>.</p>
+
+<p><img src="http://blog.popstas.ru/images/2017-02/git-extract-subproject.jpg" /></p>
+
+<!-- more -->
+
+
+<p>В общем все оказалось просто, за минуту находится статья об этом - <a href="http://gbayer.com/development/moving-files-from-one-git-repository-to-another-preserving-history/">
+Moving Files from one Git Repository to Another, Preserving History</a>, за 10 минут становится понятно, что как работает.</p>
+
+<p>Мне нужно было проделать эту операцию 10+ раз, поэтому написал скрипт, извлекающий репозиторий одной командой.</p>
+
+<h2>Алгоритм извлечения:</h2>
+
+<ol>
+<li>Клонировать большой проект во временный репозиторий</li>
+<li>Удалить из него все, кроме папки модуля через git-фильтр. При этом переписывается история</li>
+<li>Создать чистый репозиторий для нового модуля</li>
+<li>Добавить в чистый репозиторий временный, как remote source</li>
+<li>Сделать pull из remote source в master</li>
+<li>Подчистить следы</li>
+</ol>
+
+
+<p>По идее уже после п.2 временный репозиторий выглядит как готовый модуль, пп.3-6 нужны для того, чтобы не тащить следы истории и настроек родительского проекта в дочерний.</p>
+
+<p>Например, у меня есть репозиторий <code>ansible-server</code>, в нем лежит роль <code>roles/server-scripts</code>. Тогда нужно перейти в папку ansible-server и запустить:</p>
+
+<pre><code>git-extract-subproject roles/server-scripts ansible-role-server-scripts
+</code></pre>
+
+<p>После этого рядом с <code>ansible-server</code> создастся готовый проект <code>ansible-role-server-scripts</code>. Остается добавить в него remote origin куда следует и запушить.</p>
+
+<p>В итоге получился репозиторий с историей - <a href="https://github.com/viasite-ansible/ansible-role-server-scripts/commits/master">viasite-ansible/ansible-role-server-scripts</a>.</p>
+
+<p>Код скрипта здесь - <a href="https://github.com/popstas/server-scripts/blob/master/bin/git-extract-subproject">popstas/server-scripts</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Bash on Ubuntu on Windows: первый блин]]></title>
@@ -386,59 +441,6 @@ for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail -n
 очень даже заметно.</p>
 
 <p>Конечно, в этом случае много ума не надо, чтобы понять, что кол-во процессов должно быть по кол-ву ядер, но я что-то засомневался :)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Проверяем изменения на странице через Cron]]></title>
-    <link href="http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/"/>
-    <updated>2016-01-31T02:00:13+05:00</updated>
-    <id>http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron</id>
-    <content type="html"><![CDATA[<p>Сегодня хотел заказать ароматизаторов на <a href="http://baker-flavors.blogspot.ru/">Baker Flavours</a>, дошел до страницы заказа,
-и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим количеством заказов, прием заказов временно прекращен.&rdquo;.</p>
-
-<p>Ок, будем ждать, пока эта надпись не пропадет, а чтобы не проверять руками, будем делать это на автомате и ждать уведомления.</p>
-
-<p>Строчка для crontab:
-<code>
-0 20 * * * curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { echo "BF order started" | terminal-notifier &amp;&amp; open http://bakerflavors.ru/formbf.htm }
-</code></p>
-
-<p>Подробности под катом.</p>
-
-<!-- more -->
-
-
-<p>Нужно сделать так, чтобы я узнал о том, что этот текст со страницы пропадет.</p>
-
-<p>Получаем содержимое страницы:
-<code>
-curl -s http://bakerflavors.ru/formbf.htm
-</code></p>
-
-<p>Оказалось, что страница в windows-1251 кодировке и выдает <code>�</code>. Конвертируем:
-<code>
-curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8
-</code></p>
-
-<p>Проверяем наличие текста:
-<code>
-curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null
-</code></p>
-
-<p>Когда текст пропадет, grep выдаст ненулевой exitcode. Добавляем действие на этот случай.</p>
-
-<p>В начале я сделал как обычно делаю на сервере: отправил письмо через команду <code>mail</code>. Оказалось, что письмо уходит в спам.
-Не стал с этим разбираться, вместо этого буду показывать notification. Уведомление сделал через
-<a href="https://github.com/julienXX/terminal-notifier">julienXX/terminal-notifier</a> (Mac OS),
-но тут опять вышел облом: уведомление нельзя показывать бесконечно, если я окажусь в это время не перед экраном,
-я об этом не узнаю. Поэтому буду еще и открывать страницу заказа в браузере. В итоге получилось вот это:
-<code>
-curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { \
-  echo "BF order started" | terminal-notifier &amp;&amp; \
-  open http://bakerflavors.ru/formbf.htm \
-}
-</code></p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Бывает, что надо вспомнить о чем-то в ближайшее время: выключить чайник, выйти к подъезду через 10 минут,
-бросить заниматься фигней через полчаса - &hellip;">
+  <meta name="description" content="Сегодня хотел заказать ароматизаторов на Baker Flavours, дошел до страницы заказа,
+и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/31/check-webpage-changes-with-cron/">Проверяем изменения на странице через Cron</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-31T02:00:13+05:00'><span class='date'>31.01.16</span> <span class='time'>2:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Сегодня хотел заказать ароматизаторов на <a href="http://baker-flavors.blogspot.ru/">Baker Flavours</a>, дошел до страницы заказа,
+и увидел &ldquo;Уважаемые заказчики! В связи с чрезвычайно большим количеством заказов, прием заказов временно прекращен.&rdquo;.</p>
+
+<p>Ок, будем ждать, пока эта надпись не пропадет, а чтобы не проверять руками, будем делать это на автомате и ждать уведомления.</p>
+
+<p>Строчка для crontab:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 20 * * * curl -s http://bakerflavors.ru/formbf.htm | iconv -f windows-1251 -t utf-8 | grep "временно прекращен" &gt; /dev/null || { echo "BF order started" | terminal-notifier && open http://bakerflavors.ru/formbf.htm }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Подробности под катом.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/31/check-webpage-changes-with-cron/">Читать &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -355,6 +400,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/02/22/git-extract-subproject-preserving-history/">Извлечение одной из папок в Git репозитории в отдельный репозиторий с сохранением истории - Git-extract-subproject</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/">Kapacitor: часть 1. Введение, сравнение с Monit, установка с Ansible и без, настройка</a>
       </li>
     
@@ -368,10 +417,6 @@
     
       <li class="post">
         <a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/02/git-gitlab-planfix-integration/">Интеграция Git, Gitlab и Planfix почти как на Github</a>
       </li>
     
   </ul>
@@ -429,7 +474,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - Stanislav Popov -
+  Copyright &copy; 2017 - Stanislav Popov -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

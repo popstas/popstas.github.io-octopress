@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/</loc>
+    <lastmod>2017-02-22T01:19:00+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/</loc>
     <lastmod>2016-05-19T00:47:52+05:00</lastmod>
   </url>
@@ -153,6 +157,9 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/podcasts/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/server-scripts/</loc>
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/git/</loc>
