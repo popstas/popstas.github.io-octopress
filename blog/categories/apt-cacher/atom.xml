@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Apt-cacher | Popstas]]></title>
+  <link href="http://blog.popstas.ru/blog/categories/apt-cacher/atom.xml" rel="self"/>
+  <link href="http://blog.popstas.ru/"/>
+  <updated>2017-02-24T18:46:46+05:00</updated>
+  <id>http://blog.popstas.ru/</id>
+  <author>
+    <name><![CDATA[Stanislav Popov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Как я создал и отказался от локального репозитория Apt-mirror для Ubuntu для ускорения тестирования Ansible ролей]]></title>
+    <link href="http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/"/>
+    <updated>2017-02-24T17:39:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker</id>
+    <content type="html"><![CDATA[<p>При тестировании плейбуков на чистой Ubuntu (а как же еще?) самые большие накладные расходы по времени (субъективно)
+и уж точно самые большие по трафику уходят на установку пакетов из системного репозитория. Особенно это заметно, когда видишь, что один и тот же тест Travis CI прогоняет в 1.5 раза быстрее.</p>
+
+<p>Ниже описано, как создать зеркало из <a href="http://mirror.yandex.ru/ubuntu">http://mirror.yandex.ru/ubuntu</a> и подружить его с Gitlab CI и molecule.</p>
+
+<p>TLDR: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <code>apt-cacher</code>.</p>
+
+<p><img src="http://blog.popstas.ru/images/2017-02/apt-mirror.png" /></p>
+
+<!-- more -->
+
+
+<h2>Настройка apt-mirror</h2>
+
+<p>Для синхронизации локального репозитория с основным вариант один - <code>apt-mirror</code>.
+<a href="https://apt-mirror.github.io">Официальный сайт</a> считает нас умными, поэтому все его инструкции заключаются в 3 строчках:
+<code>bash
+apt-get install apt-mirror
+nano /etc/apt/mirror.list
+sudo apt-mirror
+</code></p>
+
+<p>Все действительно почти так просто. Почти.</p>
+
+<h3>Выбор самого быстрого репозитория</h3>
+
+<p>Пока гуглил тему, случайно наткнулся на <a href="https://hub.docker.com/r/evgeniyklemin/ubuntu-fastest-apt-mirror/">инструкцию</a>, как выбрать самый быстрый репозиторий.
+Скорее всего, для нас для всех это будет <a href="http://mirror.yandex.ru/ubuntu,">http://mirror.yandex.ru/ubuntu,</a> но можно в этом убедиться:</p>
+
+<pre><code class="bash">wget -q -nv -O- http://ftp.ru.debian.org/debian/pool/main/n/netselect/netselect_0.3.ds1-26_amd64.deb &gt; /tmp/netselect_0.3.ds1-26_amd64.deb
+dpkg -i /tmp/netselect_0.3.ds1-26_amd64.deb
+netselect -s3 -t20 `wget -q -nv -O- https://launchpad.net/ubuntu/+archivemirrors | grep -P -B8 "statusUP|statusSIX" | grep -o -P "(f|ht)tp.*\"" | tr '"\n' '  '`
+</code></pre>
+
+<p>Пакета нет в репозитории Ubuntu, поэтому качаем из репозитория Debian
+В результате вы получите список из 3 самых быстрых (по пингу) репозиториев:</p>
+
+<pre><code>54 http://mirror.yandex.ru/ubuntu/
+89 http://ubuntu.volia.net/ubuntu-archive/
+124 http://nl.archive.ubuntu.com/ubuntu/
+</code></pre>
+
+<h3>Конфигурация</h3>
+
+<p>Открываем <code>/etc/apt/mirror.list</code>.</p>
+
+<ul>
+<li>Меняем <code>archive.ubuntu.com</code> на <code>mirror.yandex.ru</code>.</li>
+<li>Убираем <code>multiverse</code> репозиторий (в стандартном Docker контейнере <code>ubuntu</code> его нет, видимо не очень нужен, зато экономим сразу 13 Гб).</li>
+<li>Меняем путь хранения зеркала, не забывая после этого скопировать пустой скрипт в новое место <code>/var/spool/apt-mirror/var/postmirror.sh</code>, иначе <code>apt-mirror</code> будет в конце падать с ошибкой. У меня зеркало будет храниться в <code>/var/backups/apt-mirror</code> (на диске с бекапами места много)</li>
+</ul>
+
+
+<p>Это же в виде команд:
+<code>bash
+sed -i /etc/apt/mirror.list 's/archive.ubuntu.com/mirror.yandex.ru/g'
+sed -i /etc/apt/mirror.list 's/ multiverse//g'
+sed -i /etc/apt/mirror.list 's/\/var\/spool\/apt-mirror/\var\/backups\/apt-mirror/g'
+mkdir -p /var/backups/apt-mirror/var
+cp /var/spool/apt-mirror/var/postmirror.sh /var/backups/apt-mirror/var
+</code></p>
+
+<p>Добавляем в cron задание по обновлению репозитория, я буду запускать в 1 ночи:
+<code>bash
+sed -i 's/#0 4/0 1/g' /etc/cron.d/apt-mirror
+</code></p>
+
+<p>Настраиваем nginx на отдачу репозитория, у меня конфиг такой:
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>  listen 80<span class="p">;</span>
+</span><span class='line'>  server_name mirror.myserver.ru<span class="p">;</span>
+</span><span class='line'>  root /var/backups/apt-mirror/mirror/mirror.yandex.ru<span class="p">;</span>
+</span><span class='line'>  access_log off<span class="p">;</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  location / <span class="o">{</span>
+</span><span class='line'>    autoindex on<span class="p">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Все готово, осталось запустить <code>apt-mirror</code> и подождать денек: у меня выкачивалось 142 Гб.
+Причем обновления тоже будут весить ощутимо, как я понял: через день я запустил apt-mirror еще раз,
+он скачал 1.5 Гб.</p>
+
+<p>Проверяем URL <a href="http://mirror.myserver.ru/,">http://mirror.myserver.ru/,</a> там должен быть доступен каталог <code>ubuntu</code>.</p>
+
+<p>После этого можете сменить системные репозитории в ваших локальных убунтах и наслаждаться скоростью.</p>
+
+<h3>Ошибка при apt-get update: binary-i386/Packages: 404  Not Found</h3>
+
+<p>Хотя нет, насладиться сразу конечно не получилось. По какой-то причине (наверное причина в месте на диске), apt-mirror выкачивает только amd64 пакеты, из-за чего <code>apt-get update</code> ругается:
+<code>
+W: The repository 'http://apt.myserver.ru/ubuntu xenial-backports Release' does not have a Release file.
+W: Failed to fetch http://apt.myserver.ru/ubuntu/dists/xenial/main/binary-i386/Packages: 404  Not Found
+W: Failed to fetch http://apt.myserver.ru/ubuntu/dists/xenial-updates/main/binary-i386/Packages: 404  Not Found
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+</code></p>
+
+<p>Казалось бы ничего страшного, но уверен, что в тестах ненулевой код выхода apt-get будет все останавливать, поэтому придется чинить.</p>
+
+<p>Ошибка есть на <a href="https://askubuntu.com/questions/465303/apt-mirror-error/574141">askubuntu.com</a>, спасибо человеку, который предложил решение и негодовал по поводу того, что есть только в <code>man sources.list</code>.</p>
+
+<p>Решение напрашивается: явно указывать в <code>sources.list</code>, что в репозитории только amd64 пакеты, то есть вместо:
+<code>
+deb [ arch=amd64 ] http://apt.myserver.ru/ubuntu/ xenial main restricted universe
+</code></p>
+
+<p>С настройкой <code>apt-mirror</code> закончили, перейдем к использованию в тестах.</p>
+
+<hr />
+
+<h2>Переключение Docker контейнера на локальный apt репозиторий</h2>
+
+<p><a href="https://github.com/ekino/docker-images/tree/master/apt-mirror">https://github.com/ekino/docker-images/tree/master/apt-mirror</a> - здесь приведено 2 способа настройки репозитория в контейнере, не изменяя его:</p>
+
+<ol>
+<li>[Плохой способ] Подмена через DNS</li>
+<li>[Хороший способ] Подмена <code>/etc/apt/sources.list</code></li>
+</ol>
+
+
+<p>Я выбрал хороший. Делается это монтированием файла на место <code>/etc/apt/sources.list</code>:</p>
+
+<pre><code class="bash">FQDN="apt.myserver.ru"
+cat &lt;&lt;EOF &gt; sources.list-$FQDN
+deb [ arch=amd64 ] http://$FQDN/ubuntu/ xenial main restricted universe
+deb [ arch=amd64 ] http://$FQDN/ubuntu/ xenial-updates main restricted universe
+deb [ arch=amd64 ] http://$FQDN/ubuntu/ xenial-security main restricted universe
+EOF
+</code></pre>
+
+<p>Чтобы не тащить с собой артефакты, файл создается командой.</p>
+
+<p>После этого проверяем, это должно отработать нормально:
+<code>bash
+docker run --rm -it -v $(readlink -f sources.list-$FQDN):/etc/apt/sources.list ubuntu:16.04 apt-get update
+</code></p>
+
+<p>Если <code>readlink</code> выдает ошибку <code>readlink: illegal option -- f</code>, тогда вы скорее всего сидите на MacOS и вам нужно сделать <code>brew install coreutils</code> и прописать в переменную <code>PATH</code> то, что он просит.</p>
+
+<h2>Сравнение скорости</h2>
+
+<p>Я потратил около 4 часов на то, чтобы настроить локальные репозитории, посмотрим, сколько я сэкономил времени.
+Скорость инета у меня 30 мбит.</p>
+
+<p>Я сравнил отработку <code>time molecule test</code> на 3 ansible ролях, вот результаты:</p>
+
+<table>
+<thead>
+<tr>
+<th>Роль                </th>
+<th> Стандартный репозиторий </th>
+<th> Локальный репозиторий </th>
+<th> Travis CI:</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ansible-role-common </td>
+<td> 9:24                    </td>
+<td> 6:51                  </td>
+<td> <strong>4:32</strong></td>
+</tr>
+<tr>
+<td>ansible-role-mysql  </td>
+<td> 4:02                    </td>
+<td> <strong>3:40</strong>              </td>
+<td> 3:46</td>
+</tr>
+<tr>
+<td>ansible-role-zsh    </td>
+<td> 4:39                    </td>
+<td> <strong>3:02</strong>              </td>
+<td> 4:08</td>
+</tr>
+</tbody>
+</table>
+
+
+<hr />
+
+<p>Как видно, прирост небольшой, всего 20-30%.</p>
+
+<p>Тут надо заметить, что в <code>test</code> входит проверка идемпотентности, где никакие пакеты не ставятся. Тогда я сравнил время выполнения &lsquo;molecule converge&rsquo; для <code>ansible-role-mysql</code> и получил немного лучшие результаты: 2:30 против 3:17, это уже почти в 2 раза быстрее.</p>
+
+<table>
+<thead>
+<tr>
+<th>Роль                </th>
+<th> Стандартный репозиторий </th>
+<th> Локальный репозиторий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ansible-role-common </td>
+<td> 8:15                    </td>
+<td> 6:09</td>
+</tr>
+<tr>
+<td>ansible-role-mysql  </td>
+<td> 3:17                    </td>
+<td> 2:30</td>
+</tr>
+<tr>
+<td>ansible-role-zsh    </td>
+<td> 4:05                    </td>
+<td> 2:43</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>Выводы по поводу apt-mirror</h2>
+
+<p>Результаты меня немного расстроили. Оказалось, что поразительного прироста в скорости, на который я надеялся, не будет.</p>
+
+<h3>Плюсы:</h3>
+
+<ul>
+<li>один раз потратил время, чтобы при каждом тесте ждать меньше</li>
+<li>уменьшает желание тестировать не на чистой машине</li>
+<li>интернет-канал не занимается в рабочее время</li>
+</ul>
+
+
+<h3>Минусы</h3>
+
+<ul>
+<li>эффект слабый, 20-30%</li>
+<li>сложности с пробросом файла <code>sources.list</code></li>
+<li>уход от стандартной конфигурации Gitlab CI</li>
+<li>разные конфиги для Travis CI и Gitlab CI</li>
+</ul>
+
+
+<p>На основе этого сделал для себя вывод: это подходит только для локального постоянного применения, в остальных случаях минусы перевешивают.</p>
+
+<h2>Что-то тут не так&hellip;</h2>
+
+<p>После этого я задумался: а как делают &ldquo;большие&rdquo;? Из серьезных решений для локальных репозиториев я знаю только Artifactory. Пошел посмотреть, как у них обстоят дела с зеркалами и <a href="https://www.jfrog.com/knowledge-base/how-to-mirror-a-remote-repository/">нашел</a>: они умеют быть зеркалом, но не рекоменуют их так использовать, т.к. это неэффективно. Вместо этого они предлагают пользоваться ими как кеширующим сервером. Такие дела&hellip; Надо смотреть в сторону <a href="https://help.ubuntu.com/community/Apt-Cacher-Server">apt-cacher</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/</loc>
+    <lastmod>2017-02-24T17:39:00+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/</loc>
     <lastmod>2017-02-22T01:19:00+05:00</lastmod>
   </url>
@@ -205,6 +209,21 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/monit/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/apt/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/apt-mirror/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/apt-cacher/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/molecule/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/artifactory/</loc>
   </url>
   <url>
     <loc>http://blog.popstas.ru/yandex_7f20074a82880830.html</loc>

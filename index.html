@@ -9,7 +9,8 @@
   <meta name="author" content="Stanislav Popov">
 
   
-  <meta name="description" content="Занялся я тут распиливанием большого проекта (дерево ansible ролей) на отдельные репозитории. Для этого надо: Извлечь директорию подпроекта в &hellip;">
+  <meta name="description" content="При тестировании плейбуков на чистой Ubuntu (а как же еще?) самые большие накладные расходы по времени (субъективно)
+и уж точно самые большие по &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,47 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/">Как я создал и отказался от локального репозитория Apt-mirror для Ubuntu для ускорения тестирования Ansible ролей</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-24T17:39:00+05:00'><span class='date'>24.02.17</span> <span class='time'>5:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>При тестировании плейбуков на чистой Ubuntu (а как же еще?) самые большие накладные расходы по времени (субъективно)
+и уж точно самые большие по трафику уходят на установку пакетов из системного репозитория. Особенно это заметно, когда видишь, что один и тот же тест Travis CI прогоняет в 1.5 раза быстрее.</p>
+
+<p>Ниже описано, как создать зеркало из <a href="http://mirror.yandex.ru/ubuntu">http://mirror.yandex.ru/ubuntu</a> и подружить его с Gitlab CI и molecule.</p>
+
+<p>TLDR: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <code>apt-cacher</code>.</p>
+
+<p><img src="/images/2017-02/apt-mirror.png" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/">Читать &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -470,43 +512,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Большой тачпад как замена мышки</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-25T23:31:57+05:00'><span class='date'>25.02.16</span> <span class='time'>11:31 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Наслушавшись рассказов про то, какой на макбуке офигенный большой тачпад и как он легко заменяет мышку,
-нашел способ испытать это на себе бесплатно. Описываю свои впечатления как обычно: плюсы, минусы, грабли, способы обхода.</p>
-
-<p><img src="/images/2016-02/touchpad_wacom.jpg"></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/02/25/big-touchpad-as-mouse-replacement/">Читать &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -522,6 +527,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/">Как я создал и отказался от локального репозитория Apt-mirror для Ubuntu для ускорения тестирования Ansible ролей</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/02/22/git-extract-subproject-preserving-history/">Извлечение одной из папок в Git репозитории в отдельный репозиторий с сохранением истории - Git-extract-subproject</a>
       </li>
     
@@ -535,10 +544,6 @@
     
       <li class="post">
         <a href="/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/">Windows 10 Build 14316 со встроенной Ubuntu и Bash через программу Microsoft Insider Preview доступна не всем</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/">CHANGELOG.md: ручное и автоматическое ведение истории изменений проекта в Git</a>
       </li>
     
   </ul>
