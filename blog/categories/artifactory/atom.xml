@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Artifactory | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/artifactory/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2017-02-24T18:46:46+05:00</updated>
+  <updated>2017-02-26T05:02:20+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -23,7 +23,7 @@
 
 <p>Ниже описано, как создать зеркало из <a href="http://mirror.yandex.ru/ubuntu">http://mirror.yandex.ru/ubuntu</a> и подружить его с Gitlab CI и molecule.</p>
 
-<p>TLDR: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <code>apt-cacher</code>.</p>
+<p>Tl;dr: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <a href="/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/">apt-cacher-ng</a>.</p>
 
 <p><img src="http://blog.popstas.ru/images/2017-02/apt-mirror.png" /></p>
 
@@ -187,20 +187,20 @@ docker run --rm -it -v $(readlink -f sources.list-$FQDN):/etc/apt/sources.list u
 <tbody>
 <tr>
 <td>ansible-role-common </td>
-<td> 9:24                    </td>
-<td> 6:51                  </td>
+<td> 8:04                    </td>
+<td> 6:18                  </td>
 <td> <strong>4:32</strong></td>
 </tr>
 <tr>
 <td>ansible-role-mysql  </td>
-<td> 4:02                    </td>
-<td> <strong>3:40</strong>              </td>
+<td> 3:41                    </td>
+<td> <strong>3:22</strong>              </td>
 <td> 3:46</td>
 </tr>
 <tr>
 <td>ansible-role-zsh    </td>
-<td> 4:39                    </td>
-<td> <strong>3:02</strong>              </td>
+<td> 3:29                    </td>
+<td> <strong>2:54</strong>              </td>
 <td> 4:08</td>
 </tr>
 </tbody>
@@ -209,7 +209,8 @@ docker run --rm -it -v $(readlink -f sources.list-$FQDN):/etc/apt/sources.list u
 
 <hr />
 
-<p>Как видно, прирост небольшой, всего 20-30%.</p>
+<p>Как видно, прирост небольшой, всего 20-30%.
+UPD 26.02.2017: на при написании <a href="/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/">статьи про apt-cacher-ng</a> я перепроверил результаты и разница сократилась до 10-20%.</p>
 
 <p>Тут надо заметить, что в <code>test</code> входит проверка идемпотентности, где никакие пакеты не ставятся. Тогда я сравнил время выполнения &lsquo;molecule converge&rsquo; для <code>ansible-role-mysql</code> и получил немного лучшие результаты: 2:30 против 3:17, это уже почти в 2 раза быстрее.</p>
 
@@ -268,7 +269,9 @@ docker run --rm -it -v $(readlink -f sources.list-$FQDN):/etc/apt/sources.list u
 
 <h2>Что-то тут не так&hellip;</h2>
 
-<p>После этого я задумался: а как делают &ldquo;большие&rdquo;? Из серьезных решений для локальных репозиториев я знаю только Artifactory. Пошел посмотреть, как у них обстоят дела с зеркалами и <a href="https://www.jfrog.com/knowledge-base/how-to-mirror-a-remote-repository/">нашел</a>: они умеют быть зеркалом, но не рекоменуют их так использовать, т.к. это неэффективно. Вместо этого они предлагают пользоваться ими как кеширующим сервером. Такие дела&hellip; Надо смотреть в сторону <a href="https://help.ubuntu.com/community/Apt-Cacher-Server">apt-cacher</a>.</p>
+<p>После этого я задумался: а как делают &ldquo;большие&rdquo;? Из серьезных решений для локальных репозиториев я знаю только Artifactory. Пошел посмотреть, как у них обстоят дела с зеркалами и <a href="https://www.jfrog.com/knowledge-base/how-to-mirror-a-remote-repository/">нашел</a>: они умеют быть зеркалом, но не рекоменуют их так использовать, т.к. это неэффективно. Вместо этого они предлагают пользоваться ими как кеширующим сервером. Такие дела&hellip;</p>
+
+<p>UPD 26.02.2017: перешел на использование apt-cacher-ng, в моем случае он лучше по всем параметрам, подробности читайте в продолжении</p>
 ]]></content>
   </entry>
   

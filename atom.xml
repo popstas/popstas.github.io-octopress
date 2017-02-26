@@ -4,7 +4,7 @@
   <title><![CDATA[Popstas]]></title>
   <link href="http://blog.popstas.ru/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2017-02-24T18:46:46+05:00</updated>
+  <updated>2017-02-26T05:02:20+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -12,6 +12,201 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Настройка кеширующего прокси Apt-cacher-ng для ускорения тестирования Ansible ролей с Molecule, Gitlab CI и Docker]]></title>
+    <link href="http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/"/>
+    <updated>2017-02-26T04:14:00+05:00</updated>
+    <id>http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci</id>
+    <content type="html"><![CDATA[<p>В <a href="http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/">предыдущей статье</a> я настраивал <code>apt-mirror</code> для тех же целей. У того способа нашлось несколько недостатков.</p>
+
+<p>В статье ниже описано, как решить ту же проблему, используя <code>apt-cacher-ng</code>.</p>
+
+<p>Tl;dr: на этот раз все получилось, этот способ меня устроил.</p>
+
+<p><img src="http://blog.popstas.ru/images/2017-02/apt-cacher-ng.png" /></p>
+
+<!-- more -->
+
+
+<h2>Настройка apt-cacher-ng</h2>
+
+<p>Здесь все довольно просто, проще, чем с <code>apt-mirror</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apt-get install apt-cacher-ng</span></code></pre></td></tr></table></div></figure>
+
+
+<p>В конфиге я задал пароль админа в <code>/etc/apt-cacher-ng/security.conf</code>, он дает право смотреть подробную статистику по cache-hit.</p>
+
+<p>В <code>/etc/apt-cacher-ng/acng.conf</code> интересны следующие строчки:</p>
+
+<ul>
+<li><code>ExTreshold: 4</code> - устаревание кеша, в днях. Если файл ни разу не запрашивался дольше указанного времени, он будет удален. Я увеличил до 30 дней</li>
+</ul>
+
+
+<p>В остальном стандартный конфиг делает следующее:</p>
+
+<ul>
+<li>запускает веб-сервер для всего мира на <code>0.0.0.0:3142</code></li>
+<li>хостит страничку и информацией о сервисе и статистикой на <a href="http://myserver.ru:3142">http://myserver.ru:3142</a></li>
+<li>хранит кеши в <code>/var/cache/apt-cacher-ng</code></li>
+</ul>
+
+
+<p>После этого можно перезапустить сервис:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>service apt-cacher-ng restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Проверяем, что он поднялся, должен открыться урл <code>http://myserver.ru:3142</code>.</p>
+
+<h2>Настройка на клиентах</h2>
+
+<p>На клиентах нужно добавить один файлик с указанием адреса прокси, <code>sources.list</code> менять не надо:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo 'Acquire::http::Proxy "http://myserver.ru:3142";' &gt; /etc/apt/apt.conf.d/00aptproxy</span></code></pre></td></tr></table></div></figure>
+
+
+<p>На хосте я этого делать не стал, т.к. у меня там стоит старая Ubuntu 14.04, а тестирую я на Ubuntu 16.04. К слову, apt-cacher-ng это не волнует, он нормально кеширует новые пакеты, не смотря на то, что стоит на старой оси. Как я понимаю, его можно использовать и в смешанном режиме, то есть кешировать пакеты сразу от нескольких версий операционок, но я это не проверял.</p>
+
+<p>Вместо этого я положил файлик с указанием прокси в отдельную папку, откуда я буду пробрасывать его внутрь тестовых контейнеров:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo 'Acquire::http::Proxy "http://myserver.ru:3142";' &gt; /usr/local/src/00aptproxy</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Использование с Molecule, Gitlab CI и Travis CI</h2>
+
+<p>Не знаю зачем, но роли я тестирую сразу двумя CI: Gitlab и Travis. В связи с этим появляется проблема: нужно на Gitlab CI использовать один кеширующий сервер, при локальном тестировании другой, а для Travis CI убирать его.</p>
+
+<p>Сложность в том, что Molecule не поддерживает разные конфиги, только умеет использовать в конфигах переменные окружения. Это я и использовал.</p>
+
+<p>Смысл в том, что на разных CI в контейнер будут пробрасываться разные <code>/etc/apt/apt.conf.d/00aptproxy</code>, для Travis это будет просто пустой файл.</p>
+
+<p><code>.travis.yml</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>script:
+</span><span class='line'>  - export MOLECULE_APTPROXY_PATH="$PWD/00aptproxy"
+</span><span class='line'>  - touch "$MOLECULE_APTPROXY_PATH"
+</span><span class='line'>  - molecule --debug test</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>molecule.yml</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker:
+</span><span class='line'>  containers:
+</span><span class='line'>    - name: ansible-role-mysql
+</span><span class='line'>      image: ubuntu
+</span><span class='line'>      image_version: latest
+</span><span class='line'>      volume_mounts:
+</span><span class='line'>        - ${MOLECULE_APTPROXY_PATH}:/etc/apt/apt.conf.d/00aptproxy</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>.gitlab-ci.yml</code> я решил не менять, вместо этого я изменил способ регистрации раннеров в Gitlab CI, используются специальные раннеры с проброшенной переменной окружения:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gitlab-ci-multi-runner register -n \
+</span><span class='line'>  --executor docker \
+</span><span class='line'>  --description "Docker at myserver.ru on popstas/ubuntu-molecule" \
+</span><span class='line'>  --docker-image "popstas/ubuntu-molecule:latest" \
+</span><span class='line'>  --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
+</span><span class='line'>  --env "MOLECULE_APTPROXY_PATH=/usr/local/src/00aptproxy"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Это сделано потому, что я еще запускаю локальные раннеры, хотелось сделать так, чтобы <code>.gitlab-ci.yml</code> подходил во всех случаях.</p>
+
+<p>На локальной машине можно просто добавить переменные окружения через <code>export</code> прямо в терминале или добавить их в ваш <code>~/.profile</code>, тогда можно просто запускать <code>molecule test</code> и все будет работать.</p>
+
+<h2>Тестирование скорости</h2>
+
+<p>Дополню таблицу из <a href="http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/">прошлой статьи</a>. Естественно, указано время второго прогона apt-cacher-ng для роли, т.к. в первый запуск пакеты еще не скачались, и скорость будет как при использовании стандартного репозитория.</p>
+
+<table>
+<thead>
+<tr>
+<th>Роль                </th>
+<th> archive.ubuntu.org </th>
+<th> apt-mirror </th>
+<th> apt-cacher-ng </th>
+<th> Travis CI:</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ansible-role-common </td>
+<td> 8:04               </td>
+<td> 6:18       </td>
+<td> 6:30          </td>
+<td> <strong>4:32</strong></td>
+</tr>
+<tr>
+<td>ansible-role-mysql  </td>
+<td> 3:41               </td>
+<td> <strong>3:22</strong>   </td>
+<td> 3:26          </td>
+<td> 3:46</td>
+</tr>
+<tr>
+<td>ansible-role-zsh    </td>
+<td> 3:16               </td>
+<td> <strong>2:54</strong>   </td>
+<td> 2:56          </td>
+<td> 4:08</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Как видим, в скорости решение с <code>apt-cacher-ng</code> по сравнению с <code>apt-mirror</code> почти не теряет. Если не видно разницы, зачем тратить лишние 140 Гб?</p>
+
+<p>Кстати, скорость тестирования увеличилась и на других способах, которые я описывал в прошлой статье: если тогда разница между способами была 20-30%, то теперь она сократилась до 10-20%. Это говорит о том, что если ничего не делать и пользоваться стандартными удаленными репозиториями, вы будете больше зависеть от внешних факторов.</p>
+
+<h2>Выводы</h2>
+
+<h3>Минусы:</h3>
+
+<ul>
+<li>Подходит только для множественного запуска однотипных установок, в моем случае так и есть</li>
+<li>Немного медленнее, чем при использовании зеркала, минусом это назвать сложно, т.к. разница всего 1-3%</li>
+<li>Нужно пробрасывать порт через фаервол, если хотите открыть прокси всему миру, я этого делать не стал :)</li>
+</ul>
+
+
+<h3>Плюсы:</h3>
+
+<ul>
+<li>Хранит только нужные пакеты</li>
+<li>Кеширует не только пакеты из стандартного репозитория, но и внешние пакеты, которые вы добавляете в <code>sources.list</code></li>
+<li>Не требует изменения sources.list</li>
+<li>Проше настраивать</li>
+<li>Не нужен веб-сервер (nginx)</li>
+<li>По умолчанию фаервол закрывает вас</li>
+</ul>
+
+
+<p>Как видите, минусы надуманны, а плюсы реальны. На этом история ускорения скачивания пакетов закончена, но остается еще много интересных моментов в тестировании Ansible на Gitlab CI, продолжение следует.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Как я создал и отказался от локального репозитория Apt-mirror для Ubuntu для ускорения тестирования Ansible ролей]]></title>
@@ -23,7 +218,7 @@
 
 <p>Ниже описано, как создать зеркало из <a href="http://mirror.yandex.ru/ubuntu">http://mirror.yandex.ru/ubuntu</a> и подружить его с Gitlab CI и molecule.</p>
 
-<p>TLDR: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <code>apt-cacher</code>.</p>
+<p>Tl;dr: не делайте локальный репозиторий через <code>apt-mirror</code> для мелких задач, не стоит оно того. Вместо этого нужно поднять кеширующий сервер через <a href="http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/">apt-cacher-ng</a>.</p>
 
 <p><img src="http://blog.popstas.ru/images/2017-02/apt-mirror.png" /></p>
 
@@ -225,20 +420,20 @@
 <tbody>
 <tr>
 <td>ansible-role-common </td>
-<td> 9:24                    </td>
-<td> 6:51                  </td>
+<td> 8:04                    </td>
+<td> 6:18                  </td>
 <td> <strong>4:32</strong></td>
 </tr>
 <tr>
 <td>ansible-role-mysql  </td>
-<td> 4:02                    </td>
-<td> <strong>3:40</strong>              </td>
+<td> 3:41                    </td>
+<td> <strong>3:22</strong>              </td>
 <td> 3:46</td>
 </tr>
 <tr>
 <td>ansible-role-zsh    </td>
-<td> 4:39                    </td>
-<td> <strong>3:02</strong>              </td>
+<td> 3:29                    </td>
+<td> <strong>2:54</strong>              </td>
 <td> 4:08</td>
 </tr>
 </tbody>
@@ -247,7 +442,8 @@
 
 <hr />
 
-<p>Как видно, прирост небольшой, всего 20-30%.</p>
+<p>Как видно, прирост небольшой, всего 20-30%.
+UPD 26.02.2017: на при написании <a href="http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/">статьи про apt-cacher-ng</a> я перепроверил результаты и разница сократилась до 10-20%.</p>
 
 <p>Тут надо заметить, что в <code>test</code> входит проверка идемпотентности, где никакие пакеты не ставятся. Тогда я сравнил время выполнения &lsquo;molecule converge&rsquo; для <code>ansible-role-mysql</code> и получил немного лучшие результаты: 2:30 против 3:17, это уже почти в 2 раза быстрее.</p>
 
@@ -306,7 +502,9 @@
 
 <h2>Что-то тут не так&hellip;</h2>
 
-<p>После этого я задумался: а как делают &ldquo;большие&rdquo;? Из серьезных решений для локальных репозиториев я знаю только Artifactory. Пошел посмотреть, как у них обстоят дела с зеркалами и <a href="https://www.jfrog.com/knowledge-base/how-to-mirror-a-remote-repository/">нашел</a>: они умеют быть зеркалом, но не рекоменуют их так использовать, т.к. это неэффективно. Вместо этого они предлагают пользоваться ими как кеширующим сервером. Такие дела&hellip; Надо смотреть в сторону <a href="https://help.ubuntu.com/community/Apt-Cacher-Server">apt-cacher</a>.</p>
+<p>После этого я задумался: а как делают &ldquo;большие&rdquo;? Из серьезных решений для локальных репозиториев я знаю только Artifactory. Пошел посмотреть, как у них обстоят дела с зеркалами и <a href="https://www.jfrog.com/knowledge-base/how-to-mirror-a-remote-repository/">нашел</a>: они умеют быть зеркалом, но не рекоменуют их так использовать, т.к. это неэффективно. Вместо этого они предлагают пользоваться ими как кеширующим сервером. Такие дела&hellip;</p>
+
+<p>UPD 26.02.2017: перешел на использование apt-cacher-ng, в моем случае он лучше по всем параметрам, подробности читайте в продолжении</p>
 ]]></content>
   </entry>
   

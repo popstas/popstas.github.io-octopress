@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/</loc>
+    <lastmod>2017-02-26T04:14:00+05:00</lastmod>
+  </url>
+  <url>
     <loc>http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/</loc>
     <lastmod>2017-02-24T17:39:00+05:00</lastmod>
   </url>
@@ -218,6 +222,9 @@
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/apt-cacher/</loc>
+  </url>
+  <url>
+    <loc>http://blog.popstas.ru/blog/categories/apt-cacher-ng/</loc>
   </url>
   <url>
     <loc>http://blog.popstas.ru/blog/categories/molecule/</loc>
