@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Docker | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/docker/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2017-02-26T05:19:56+05:00</updated>
+  <updated>2017-03-04T02:39:48+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -59,7 +59,54 @@
 service apt-cacher-ng restart
 </code></p>
 
+<p>Также нужно отредактировать файл ``, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:
+<code>
+http://mirror.yandex.ru/ubuntu/
+http://archive.ubuntu.com/ubuntu/
+</code>
+Подробности ремапинга можно почитать <a href="https://www.unix-ag.uni-kl.de/~bloch/acng/html/config-serv.html">в документации</a>. В 2 словах: когда клиент запрашивает пакет, apt-cacher-ng скачивает его не с репозитория, который прописан на клиенте, а с первого зеркала, указанного в файле ремапинга. Второй репозиторий по факту никогда не выбирается.</p>
+
 <p>Проверяем, что он поднялся, должен открыться урл <code>http://myserver.ru:3142</code>.</p>
+
+<h3>Ошибка 403 при получении одного из пакетов</h3>
+
+<p>Через некоторое время использования я споткнулся об ошибку:
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install php-common -y
+</span><span class='line'>Reading package lists&hellip; Done
+</span><span class='line'>Building dependency tree
+</span><span class='line'>Reading state information&hellip; Done
+</span><span class='line'>The following additional packages will be installed:
+</span><span class='line'>  psmisc
+</span><span class='line'>The following NEW packages will be installed:
+</span><span class='line'>  php-common psmisc
+</span><span class='line'>0 upgraded, 2 newly installed, 0 to remove and 7 not upgraded.
+</span><span class='line'>Need to get 10.8 kB/58.8 kB of archives.
+</span><span class='line'>After this operation, 299 kB of additional disk space will be used.
+</span><span class='line'>Err:1 &lt;a href="http://archive.ubuntu.com/ubuntu"&gt;http://archive.ubuntu.com/ubuntu&lt;/a&gt; xenial/main amd64 php-common all 1:35ubuntu6
+</span><span class='line'>  403  Forbidden
+</span><span class='line'>E: Failed to fetch &lt;a href="http://archive.ubuntu.com/ubuntu/pool/main/p/php-defaults/php-common_35ubuntu6_all.deb"&gt;http://archive.ubuntu.com/ubuntu/pool/main/p/php-defaults/php-common_35ubuntu6_all.deb&lt;/a&gt;  403  Forbidden&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;E: Unable to fetch some archives, maybe run apt-get update or try with &ndash;fix-missing?</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Я стал разбираться, оказалось, что дело в прокси, если его убрать, все становится нормально.</p>
+
+<p>Оказалось, что репозиторий по умолчанию, который прописан в <code>/etc/apt-cacher-ng/backends_ubuntu.default</code> какой-то немного битый и пакет php-common не отдавал. Чтобы этого не произошло, нужно добавить свои репозитории в <code>/etc/apt-cacher-ng/backends_ubuntu</code>.</p>
 
 <h2>Настройка на клиентах</h2>
 
