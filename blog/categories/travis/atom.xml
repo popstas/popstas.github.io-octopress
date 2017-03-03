@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Travis | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/travis/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2017-03-04T02:39:48+05:00</updated>
+  <updated>2017-03-04T02:42:52+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -59,7 +59,7 @@
 service apt-cacher-ng restart
 </code></p>
 
-<p>Также нужно отредактировать файл ``, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:
+<p>Также нужно отредактировать файл <code>/etc/apt-cacher-ng/backends_ubuntu</code>, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:
 <code>
 http://mirror.yandex.ru/ubuntu/
 http://archive.ubuntu.com/ubuntu/
@@ -107,6 +107,12 @@ http://archive.ubuntu.com/ubuntu/
 <p>Я стал разбираться, оказалось, что дело в прокси, если его убрать, все становится нормально.</p>
 
 <p>Оказалось, что репозиторий по умолчанию, который прописан в <code>/etc/apt-cacher-ng/backends_ubuntu.default</code> какой-то немного битый и пакет php-common не отдавал. Чтобы этого не произошло, нужно добавить свои репозитории в <code>/etc/apt-cacher-ng/backends_ubuntu</code>.</p>
+
+<p>Solution:
+<code>
+echo http://archive.ubuntu.com/ubuntu/ &gt; /etc/apt-cacher-ng/backends_ubuntu
+service apt-cacher-ng restart
+</code></p>
 
 <h2>Настройка на клиентах</h2>
 

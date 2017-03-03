@@ -139,7 +139,7 @@
 </pre></td><td class='code'><pre><code class=''><span class='line'>service apt-cacher-ng restart</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Также нужно отредактировать файл ``, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:</p>
+<p>Также нужно отредактировать файл <code>/etc/apt-cacher-ng/backends_ubuntu</code>, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -192,6 +192,14 @@
 <p>Я стал разбираться, оказалось, что дело в прокси, если его убрать, все становится нормально.</p>
 
 <p>Оказалось, что репозиторий по умолчанию, который прописан в <code>/etc/apt-cacher-ng/backends_ubuntu.default</code> какой-то немного битый и пакет php-common не отдавал. Чтобы этого не произошло, нужно добавить свои репозитории в <code>/etc/apt-cacher-ng/backends_ubuntu</code>.</p>
+
+<p>Solution:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo http://archive.ubuntu.com/ubuntu/ &gt; /etc/apt-cacher-ng/backends_ubuntu
+</span><span class='line'>service apt-cacher-ng restart</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Настройка на клиентах</h2>
 
