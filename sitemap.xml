@@ -1,239 +1,239 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/</loc>
-    <lastmod>2017-02-26T04:14:00+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/</loc>
-    <lastmod>2017-02-24T17:39:00+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/</loc>
-    <lastmod>2017-02-22T01:19:00+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/</loc>
-    <lastmod>2016-05-19T00:47:52+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows/</loc>
-    <lastmod>2016-04-11T05:01:00+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/</loc>
-    <lastmod>2016-04-07T00:26:00+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/</loc>
-    <lastmod>2016-03-06T10:09:13+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/</loc>
-    <lastmod>2016-03-02T00:49:29+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/</loc>
-    <lastmod>2016-02-29T03:46:56+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/02/27/content-consumption-pyramid-rss/</loc>
-    <lastmod>2016-02-27T14:48:03+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/02/26/docker-in-images/</loc>
-    <lastmod>2016-02-26T21:29:45+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/02/25/big-touchpad-as-mouse-replacement/</loc>
-    <lastmod>2016-02-25T23:31:57+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/</loc>
-    <lastmod>2016-01-31T02:00:13+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/</loc>
-    <lastmod>2016-01-31T01:43:24+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/</loc>
-    <lastmod>2016-01-17T08:22:25+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/</loc>
-    <lastmod>2016-01-17T07:50:17+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/</loc>
-    <lastmod>2015-12-10T19:55:20+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2015/11/22/simple-time-tracker/</loc>
-    <lastmod>2015-11-22T09:40:45+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/</loc>
-    <lastmod>2015-11-16T23:55:17+05:00</lastmod>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/archives/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/ubuntu/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/bash/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/gtd/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/javascript/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/zsh/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/macos/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/phpstorm/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/fast/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/transmission-cli/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/php/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/influxdb/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/influxdata/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/grafana/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/travis/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/ci/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/symfony/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/docker/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/box/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/phar/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/phpcs/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/phpmd/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/composer/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/coveralls/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/gadgets/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/pocket/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/twitter/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/rss/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/podcasts/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/server-scripts/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/git/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/gitlab/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/planfix/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/github/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/changelog/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/docs/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/microsoft/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/update/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/insider/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/windows/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/monitoring/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/alerting/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/kapacitor/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/ansible/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/monit/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/apt/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/apt-mirror/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/apt-cacher/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/apt-cacher-ng/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/molecule/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/blog/categories/artifactory/</loc>
-  </url>
-  <url>
-    <loc>http://blog.popstas.ru/yandex_7f20074a82880830.html</loc>
-    <lastmod>2016-03-27T11:14:39+05:00</lastmod>
-  </url>
+<url>
+<loc>http://blog.popstas.ru/blog/2017/02/26/apt-cacher-ng-for-testing-ansible-roles-with-docker-and-gitlab-ci/</loc>
+<lastmod>2017-02-26T04:14:00+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2017/02/24/why-you-should-not-use-apt-mirror-for-ansible-tests-in-docker/</loc>
+<lastmod>2017-02-24T17:39:00+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2017/02/22/git-extract-subproject-preserving-history/</loc>
+<lastmod>2017-02-22T01:19:00+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/05/19/kapacitor-ansible-install-monit-comparsion/</loc>
+<lastmod>2016-05-19T00:47:52+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/04/11/bash-on-ubuntu-on-windows/</loc>
+<lastmod>2016-04-11T05:01:00+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/04/07/windows-ubuntu-bash-insider-update-not-available/</loc>
+<lastmod>2016-04-07T00:26:00+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/03/06/changelog-dot-md-generate-from-git-conventions/</loc>
+<lastmod>2016-03-06T10:09:13+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/03/02/git-gitlab-planfix-integration/</loc>
+<lastmod>2016-03-02T00:49:29+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/02/29/average-time-of-script-execution-in-bash/</loc>
+<lastmod>2016-02-29T03:46:56+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/02/27/content-consumption-pyramid-rss/</loc>
+<lastmod>2016-02-27T14:48:03+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/02/26/docker-in-images/</loc>
+<lastmod>2016-02-26T21:29:45+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/02/25/big-touchpad-as-mouse-replacement/</loc>
+<lastmod>2016-02-25T23:31:57+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/01/31/check-webpage-changes-with-cron/</loc>
+<lastmod>2016-01-31T02:00:13+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/01/31/timer-in-browser-with-1-second-time-to-start/</loc>
+<lastmod>2016-01-31T01:43:24+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/</loc>
+<lastmod>2016-01-17T08:22:25+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2016/01/17/automacic-update-phpstorm-eap-on-mac-os/</loc>
+<lastmod>2016-01-17T07:50:17+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2015/12/10/interactive-bash-history-with-search/</loc>
+<lastmod>2015-12-10T19:55:20+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2015/11/22/simple-time-tracker/</loc>
+<lastmod>2015-11-22T09:40:45+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/2015/11/16/show-all-terminal-windows-in-ubuntu/</loc>
+<lastmod>2015-11-16T23:55:17+05:00</lastmod>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/archives/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/ubuntu/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/bash/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/gtd/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/javascript/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/zsh/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/macos/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/phpstorm/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/fast/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/transmission-cli/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/php/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/influxdb/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/influxdata/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/grafana/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/travis/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/ci/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/symfony/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/docker/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/box/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/phar/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/phpcs/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/phpmd/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/composer/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/coveralls/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/gadgets/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/pocket/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/twitter/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/rss/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/podcasts/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/server-scripts/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/git/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/gitlab/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/planfix/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/github/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/changelog/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/docs/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/microsoft/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/update/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/insider/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/windows/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/monitoring/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/alerting/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/kapacitor/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/ansible/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/monit/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/apt/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/apt-mirror/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/apt-cacher/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/apt-cacher-ng/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/molecule/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/blog/categories/artifactory/</loc>
+</url>
+<url>
+<loc>http://blog.popstas.ru/yandex_7f20074a82880830.html</loc>
+<lastmod>2016-03-27T11:14:39+05:00</lastmod>
+</url>
 </urlset>

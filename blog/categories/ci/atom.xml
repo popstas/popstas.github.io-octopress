@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ci | Popstas]]></title>
   <link href="http://blog.popstas.ru/blog/categories/ci/atom.xml" rel="self"/>
   <link href="http://blog.popstas.ru/"/>
-  <updated>2017-03-04T02:42:52+05:00</updated>
+  <updated>2017-03-04T05:49:31+05:00</updated>
   <id>http://blog.popstas.ru/</id>
   <author>
     <name><![CDATA[Stanislav Popov]]></name>
@@ -42,6 +42,7 @@
 
 <ul>
 <li><code>ExTreshold: 4</code> - устаревание кеша, в днях. Если файл ни разу не запрашивался дольше указанного времени, он будет удален. Я увеличил до 30 дней</li>
+<li><code>PassThroughPattern: .*:443</code> - нужно указать это, чтобы не было проблем с HTTPS репозиториями (об этом ниже).</li>
 </ul>
 
 
@@ -54,17 +55,17 @@
 </ul>
 
 
-<p>После этого можно перезапустить сервис:
-<code>
-service apt-cacher-ng restart
-</code></p>
-
 <p>Также нужно отредактировать файл <code>/etc/apt-cacher-ng/backends_ubuntu</code>, удалив из него лишние зеркала и поставив главное зеркало в начало, иначе рискуете однажды получить 403 ошибку при установке одного из пакетов (об этом чуть ниже). У меня файл такой:
 <code>
 http://mirror.yandex.ru/ubuntu/
 http://archive.ubuntu.com/ubuntu/
 </code>
 Подробности ремапинга можно почитать <a href="https://www.unix-ag.uni-kl.de/~bloch/acng/html/config-serv.html">в документации</a>. В 2 словах: когда клиент запрашивает пакет, apt-cacher-ng скачивает его не с репозитория, который прописан на клиенте, а с первого зеркала, указанного в файле ремапинга. Второй репозиторий по факту никогда не выбирается.</p>
+
+<p>После этого можно перезапустить сервис:
+<code>
+service apt-cacher-ng restart
+</code></p>
 
 <p>Проверяем, что он поднялся, должен открыться урл <code>http://myserver.ru:3142</code>.</p>
 
@@ -113,6 +114,31 @@ http://archive.ubuntu.com/ubuntu/
 echo http://archive.ubuntu.com/ubuntu/ &gt; /etc/apt-cacher-ng/backends_ubuntu
 service apt-cacher-ng restart
 </code></p>
+
+<h3>Ошибка 403 при доступе к HTTPS репозиториям</h3>
+
+<p>В этом месте тоже появляются ошибки, проявляются в ошибках 403 при <code>apt-get update</code>.
+Проблема здесь в том, что apt-cacher-ng не может прочитать зашифрованный трафик от https репозиториев, но все равно пытается. Этого можно избежать двумя способами:</p>
+
+<ul>
+<li>добавить такие репозитории в исключения</li>
+<li>использовать http репозитории в sources, а потом ремапить их на настоящие репозитории в apt-cacher-ng</li>
+</ul>
+
+
+<p>Первый способ позволяет избежать изменения sources для системы-клиента apt-cacher-ng, второй - экономить трафик и для таких репозиториев. Я хочу, чтобы прокси работал максимально прозрачно, поэтому я использую первый способ. За то, какие репозитории обрабатывать, отвечает параметр <code>PassThroughPattern</code>. Нам нужно исключить из регулярного выражения все HTTPS репозитории.</p>
+
+<p>Было:
+<code>
+PassThroughPattern: ^bugs.debian.org:443
+</code></p>
+
+<p>Стало:
+<code>
+PassThroughPattern: .*:443
+</code></p>
+
+<p>О втором способе можно прочитать в <a href="https://blog.packagecloud.io/eng/2015/05/05/using-apt-cacher-ng-with-ssl-tls/">этой статье</a>.</p>
 
 <h2>Настройка на клиентах</h2>
 
