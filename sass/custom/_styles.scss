@@ -1,2 +1,34 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
+
+article {
+  h2 {
+    margin-top: 3em;
+    font-size: 2em;
+    line-height: 1em;
+  }
+
+  .entry-content > table {
+    margin-bottom: 1.5em;
+
+    th, td {
+      padding: 5px;
+      border: 1px solid #ccc;
+      &:first-child {
+        border-left: none;
+      }
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    th {
+      color: #999;
+      border-top: none;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+}

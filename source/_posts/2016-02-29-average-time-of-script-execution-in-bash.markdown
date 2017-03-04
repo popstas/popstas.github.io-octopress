@@ -3,8 +3,9 @@ layout: post
 title: "average: измерение среднего времени выполнения команды в bash"
 date: 2016-02-29 03:46:56 +0500
 comments: true
-categories: 
+categories:
 - bash
+- server-scripts
 
 ---
 
@@ -93,4 +94,3 @@ $ for p in {1..10}; do echo "$p" - $(average "vendor/bin/paratest -p $p" | tail 
 очень даже заметно.
 
 Конечно, в этом случае много ума не надо, чтобы понять, что кол-во процессов должно быть по кол-ву ядер, но я что-то засомневался :)
-
